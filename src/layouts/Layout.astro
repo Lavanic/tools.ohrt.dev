@@ -1,0 +1,178 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+  current?: 'projects' | 'tools';
+}
+
+const { title, description = "Oliver Ohrt's tools and projects.", current = 'projects' } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#202E46" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <meta property="og:site_name" content="Oliver Ohrt" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+  </head>
+  <body>
+    <header>
+      <div class="banner">
+        <div class="banner-inner">
+          <a href="https://ohrt.dev">
+            <img class="chrome" src="/images/logo_fallback.png" alt="Oliver Ohrt.dev" width="740" height="258" />
+          </a>
+        </div>
+      </div>
+      <nav class="bar">
+        <div class="bar-inner">
+          <span>
+            <a href="/" aria-current={current === 'projects' ? 'page' : undefined}>
+              projects
+            </a>
+            <a href="/tools/" aria-current={current === 'tools' ? 'page' : undefined}>
+              tools
+            </a>
+            <a href="https://blog.ohrt.dev">weblog</a>
+            <a href="https://ohrt.dev">ohrt.dev</a>
+          </span>
+          <a href="https://status.ohrt.dev">status</a>
+        </div>
+      </nav>
+    </header>
+    <div class="wrapper">
+      <main>
+        <slot />
+      </main>
+    </div>
+  </body>
+</html>
+
+<style is:global>
+  body {
+    margin: 0;
+    background:
+      linear-gradient(rgb(32 46 70 / 0.98), rgb(32 46 70 / 0.98)),
+      url('/images/backdrop.avif') center top / 720px auto repeat,
+      #202e46;
+    color: #fff;
+    font-family: 'Helvetica Neue', helvetica, arial, sans-serif;
+    line-height: 1.45;
+  }
+
+  a {
+    color: #b2d1ff;
+  }
+
+  h1,
+  h2,
+  h3 {
+    margin: 0;
+    font-family: georgia, serif;
+    font-weight: normal;
+  }
+
+  .banner-inner,
+  .bar-inner,
+  .wrapper {
+    max-width: calc(46rem - 40px);
+    margin: 0 auto;
+    padding: 0 38px;
+  }
+
+  .banner {
+    height: 150px;
+    background:
+      linear-gradient(rgb(30 45 69 / 0.5), rgb(30 45 69 / 0.5)),
+      url('/images/header.png') center / cover;
+    border-bottom: 1px solid #34486e;
+  }
+
+  .banner-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+  }
+
+  .chrome {
+    display: block;
+    width: auto;
+    height: 92px;
+    filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.5));
+  }
+
+  .bar {
+    background: linear-gradient(to bottom, #6c94c6 0%, #4c6fab 50%, #44617d 51%, #5674ae 100%);
+  }
+
+  .bar-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .bar a {
+    color: #fff;
+    text-decoration: none;
+  }
+
+  .bar span a {
+    margin-right: 20px;
+  }
+
+  .bar a:hover,
+  .bar a[aria-current='page'] {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .bar a:focus-visible {
+    outline: 1px dotted #fff;
+  }
+
+  .wrapper {
+    min-height: 60vh;
+    padding-top: 30px;
+    padding-bottom: 80px;
+    background: #202e46;
+  }
+
+  .mono {
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 12.5px;
+    letter-spacing: 0.2px;
+    color: #9fb6d8;
+  }
+
+  @media (max-width: 47rem) {
+    .banner-inner,
+    .bar-inner {
+      padding: 0 20px;
+    }
+
+    .wrapper {
+      margin: 0 16px;
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+
+    .banner {
+      height: 110px;
+    }
+
+    .chrome {
+      height: 64px;
+    }
+  }
+</style>
