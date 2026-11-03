@@ -1,9 +1,12 @@
 ---
 import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
+import { fetchHealth, STATUS_PAGE } from '../lib/status';
 
 const all = (await getCollection('projects')).sort((a, b) => b.data.started.getTime() - a.data.started.getTime());
 const main = all.filter((p) => !p.data.minor);
+const health = await fetchHealth(main.flatMap((p) => (p.data.monitor ? [p.data.monitor] : [])));
+const swirl = (tag: string) => ({ UP: 'green', DOWN: 'red' })[health[tag] as 'UP' | 'DOWN'] ?? 'yellow';
 const years = [...new Set(main.map((p) => p.data.started.getUTCFullYear()))];
 const when = (d: Date) => d.toLocaleString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
 ---
@@ -33,8 +36,15 @@ const when = (d: Date) => d.toLocaleString('en-US', { month: 'short', year: 'num
                 </h3>
                 <span class="links">
                   {p.monitor && (
-                    <a href="https://status.ohrt.dev">
-                      <img class="swirl" src="/images/swirl-green.gif" width="20" height="20" alt="live" />
+                    <a href={STATUS_PAGE}>
+                      <img
+                        class="swirl"
+                        src={`/images/swirl-${swirl(p.monitor)}.gif`}
+                        width="20"
+                        height="20"
+                        alt={(health[p.monitor] ?? 'unknown').toLowerCase()}
+                        title={(health[p.monitor] ?? 'unknown').toLowerCase()}
+                      />
                       status
                     </a>
                   )}
