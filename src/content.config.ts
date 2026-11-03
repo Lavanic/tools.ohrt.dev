@@ -6,10 +6,9 @@ const projects = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string(),
-    date: z.coerce.date(),
+    started: z.coerce.date(),
     language: z.string(),
     status: z.enum(['live', 'maintained', 'finished', 'hackathon', 'wip']),
-    team: z.string().optional(),
     repo: z.string().url().optional(),
     writeup: z.string().url().optional(),
     run: z.string().optional(),
