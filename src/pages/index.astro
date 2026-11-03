@@ -1,7 +1,177 @@
 ---
+import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
+
+const all = (await getCollection('projects')).sort((a, b) => b.data.started.getTime() - a.data.started.getTime());
+const main = all.filter((p) => !p.data.minor);
+const years = [...new Set(main.map((p) => p.data.started.getUTCFullYear()))];
+const when = (d: Date) => d.toLocaleString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
 ---
 
 <Layout title="tools.ohrt.dev">
-  <p>projects go here</p>
+  <p class="intro">
+    Things I've built. A few of them run right here.
+    <small>
+      Newest first. A green swirl means it's up right now, measured at{' '}
+      <a href="https://status.ohrt.dev">status.ohrt.dev</a>.
+    </small>
+  </p>
+  {years.map((year) => (
+    <section>
+      <h2 class="year">{year}</h2>
+      <ol>
+        {main
+          .filter((p) => p.data.started.getUTCFullYear() === year)
+          .map(({ data: p }) => (
+            <li>
+              <div class="row">
+                <h3>
+                  <span class="name">{p.repo ? <a href={p.repo}>{p.title}</a> : p.title}</span>
+                  <span class="sub">
+                    {p.language}, {when(p.started)}
+                  </span>
+                </h3>
+                <span class="links">
+                  {p.monitor && (
+                    <a href="https://status.ohrt.dev">
+                      <img class="swirl" src="/images/swirl-green.gif" width="20" height="20" alt="live" />
+                      status
+                    </a>
+                  )}
+                  {p.repo && <a href={p.repo}>source</a>}
+                  {p.writeup && <a href={p.writeup}>writeup</a>}
+                  {p.run && (
+                    <a class="run" href={p.run}>
+                      run it here
+                    </a>
+                  )}
+                </span>
+              </div>
+              <p>{p.description}</p>
+            </li>
+          ))}
+      </ol>
+    </section>
+  ))}
 </Layout>
+
+<style>
+  .intro {
+    margin: 0 0 30px;
+    font-family: georgia, serif;
+    font-size: 22px;
+    line-height: 1.4;
+    color: #172238;
+  }
+
+  .intro small {
+    display: block;
+    margin-top: 8px;
+    font-family: 'Helvetica Neue', helvetica, arial, sans-serif;
+    font-size: 15px;
+    color: #4a5468;
+  }
+
+  .year {
+    margin: 28px 0 6px;
+    font-size: 15px;
+    letter-spacing: 2px;
+    color: #6b7486;
+  }
+
+  section:first-of-type .year {
+    margin-top: 0;
+  }
+
+  ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    padding: 16px 0 14px;
+    border-top: 1px solid #d6cfbf;
+  }
+
+  section:last-of-type li:last-child {
+    border-bottom: 1px solid #d6cfbf;
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 4px 16px;
+  }
+
+  h3 {
+    font-size: 21px;
+    letter-spacing: 0.3px;
+    color: #172238;
+  }
+
+  .name {
+    white-space: nowrap;
+  }
+
+  h3 a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  h3 a:hover {
+    text-decoration: underline;
+  }
+
+  .sub {
+    margin-left: 8px;
+    font-size: 15px;
+    font-style: italic;
+    letter-spacing: 0;
+    color: #6b7486;
+    white-space: nowrap;
+  }
+
+  .links {
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  .links > * + * {
+    margin-left: 12px;
+  }
+
+  .swirl {
+    width: 20px;
+    height: 20px;
+    margin-right: 3px;
+    vertical-align: -5px;
+    image-rendering: pixelated;
+  }
+
+  .run {
+    display: inline-block;
+    padding: 1px 8px;
+    border: 1px solid #5674ae;
+    border-radius: 3px;
+    background: linear-gradient(to bottom, #4c6fab, #44617d);
+    color: #fff;
+    font-size: 12px;
+    text-decoration: none;
+  }
+
+  li p {
+    max-width: 60ch;
+    margin: 6px 0 0;
+    font-size: 16px;
+  }
+
+  @media (max-width: 47rem) {
+    .sub {
+      display: block;
+      margin: 2px 0 0;
+    }
+  }
+</style>
