@@ -30,8 +30,18 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <header>
       <div class="banner">
         <div class="banner-inner">
-          <a href="https://ohrt.dev">
-            <img class="chrome" src="/images/logo_fallback.png" alt="Oliver Ohrt.dev" width="740" height="258" />
+          <a class="logo" href="/">
+            <picture>
+              <source srcset="/images/logo_still.webp" media="(prefers-reduced-motion: reduce)" />
+              <img
+                class="chrome"
+                src="/images/logo_spin.webp"
+                srcset="/images/logo_spin.webp 1x, /images/logo_spin@2x.webp 2x"
+                alt="tools.ohrt.dev"
+                width="360"
+                height="54"
+              />
+            </picture>
           </a>
         </div>
       </div>
@@ -103,10 +113,15 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     height: 100%;
   }
 
+  .logo {
+    flex: 0 1 360px;
+    min-width: 0;
+  }
+
   .chrome {
     display: block;
-    width: auto;
-    height: 92px;
+    width: 100%;
+    height: auto;
     filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.5));
   }
 
@@ -168,10 +183,6 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 
     .banner {
       height: 110px;
-    }
-
-    .chrome {
-      height: 64px;
     }
   }
 </style>
