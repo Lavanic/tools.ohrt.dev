@@ -13,7 +13,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#1D2A42" />
+    <meta name="theme-color" content="#202E46" />
     <meta name="color-scheme" content="only light" />
     <meta name="darkreader-lock" />
     <title>{title}</title>
@@ -63,16 +63,16 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   body {
     margin: 0;
     background:
-      linear-gradient(rgb(240 236 226 / 0.98), rgb(240 236 226 / 0.98)),
-      url('/images/backdrop.avif') center top / 720px auto repeat,
-      #f0ece2;
-    color: #23314b;
+      linear-gradient(rgb(32 46 70 / 0.98), rgb(32 46 70 / 0.98)),
+      url('/images/backdrop.avif') center top / 100% auto repeat,
+      #202e46;
+    color: #fff;
     font-family: 'Helvetica Neue', helvetica, arial, sans-serif;
     line-height: 1.45;
   }
 
   a {
-    color: #2f55a4;
+    color: #b2d1ff;
   }
 
   h1,
@@ -96,7 +96,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     background:
       linear-gradient(rgb(30 45 69 / 0.5), rgb(30 45 69 / 0.5)),
       url('/images/header.png') center / cover;
-    border-bottom: 1px solid #1d2a42;
+    border-bottom: 1px solid #34486e;
   }
 
   .banner-inner {
@@ -148,17 +148,24 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     min-height: 60vh;
     padding-top: 30px;
     padding-bottom: 80px;
-    background: #f7f4ec;
+    background: #202e46;
   }
 
   .mono {
     font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
     font-size: 12.5px;
     letter-spacing: 0.2px;
-    color: #6b7486;
+    color: #9fb6d8;
   }
 
   @media (max-width: 47rem) {
+    body {
+      background:
+        linear-gradient(rgb(32 46 70 / 0.96), rgb(32 46 70 / 0.96)),
+        url('/images/backdrop.avif') center top / 736px auto repeat,
+        #202e46;
+    }
+
     .banner-inner,
     .bar-inner {
       padding: 0 20px;
