@@ -62,10 +62,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 <style is:global>
   body {
     margin: 0;
-    background:
-      linear-gradient(rgb(32 46 70 / 0.98), rgb(32 46 70 / 0.98)),
-      url('/images/backdrop.avif') center top / 100% auto repeat,
-      #202e46;
+    background: #202e46;
     color: #fff;
     font-family: 'Helvetica Neue', helvetica, arial, sans-serif;
     line-height: 1.45;
@@ -148,7 +145,6 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     min-height: 60vh;
     padding-top: 30px;
     padding-bottom: 80px;
-    background: #202e46;
   }
 
   .mono {
@@ -159,13 +155,6 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   }
 
   @media (max-width: 47rem) {
-    body {
-      background:
-        linear-gradient(rgb(32 46 70 / 0.96), rgb(32 46 70 / 0.96)),
-        url('/images/backdrop.avif') center top / 736px auto repeat,
-        #202e46;
-    }
-
     .banner-inner,
     .bar-inner {
       padding: 0 20px;
