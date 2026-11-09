@@ -11,7 +11,6 @@ const projects = defineCollection({
     status: z.enum(['live', 'maintained', 'finished', 'hackathon', 'wip']),
     repo: z.string().url().optional(),
     writeup: z.string().url().optional(),
-    run: z.string().optional(),
     monitor: z.string().optional(),
     minor: z.boolean().default(false),
   }),

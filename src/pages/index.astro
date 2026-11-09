@@ -56,11 +56,6 @@ const built = new Date().toLocaleString('en-US', {
                   )}
                   {p.repo && <a href={p.repo}>source</a>}
                   {p.writeup && <a href={p.writeup}>writeup</a>}
-                  {p.run && (
-                    <a class="run" href={p.run}>
-                      run it here
-                    </a>
-                  )}
                 </span>
               </div>
               <p>{p.description}</p>
@@ -181,17 +176,6 @@ const built = new Date().toLocaleString('en-US', {
     margin-right: 3px;
     vertical-align: -5px;
     image-rendering: pixelated;
-  }
-
-  .run {
-    display: inline-block;
-    padding: 1px 8px;
-    border: 1px solid #5674ae;
-    border-radius: 3px;
-    background: linear-gradient(to bottom, #4c6fab, #44617d);
-    color: #fff;
-    font-size: 12px;
-    text-decoration: none;
   }
 
   li p {

@@ -2,10 +2,9 @@
 interface Props {
   title: string;
   description?: string;
-  current?: 'projects' | 'tools';
 }
 
-const { title, description = "Oliver Ohrt's tools and projects.", current = 'projects' } = Astro.props;
+const { title, description = "Oliver Ohrt's tools and projects." } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
 
@@ -48,11 +47,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
       <nav class="bar">
         <div class="bar-inner">
           <span>
-            <a href="/" aria-current={current === 'projects' ? 'page' : undefined}>
+            <a href="/" aria-current="page">
               projects
-            </a>
-            <a href="/tools/" aria-current={current === 'tools' ? 'page' : undefined}>
-              tools
             </a>
             <a href="https://blog.ohrt.dev">weblog</a>
             <a href="https://ohrt.dev">ohrt.dev</a>
