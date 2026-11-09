@@ -9,6 +9,12 @@ const health = await fetchHealth(main.flatMap((p) => (p.data.monitor ? [p.data.m
 const swirl = (tag: string) => ({ UP: 'green', DOWN: 'red' })[health[tag] as 'UP' | 'DOWN'] ?? 'yellow';
 const years = [...new Set(main.map((p) => p.data.started.getUTCFullYear()))];
 const when = (d: Date) => d.toLocaleString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+const built = new Date().toLocaleString('en-US', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+  timeZone: 'America/Chicago',
+});
 ---
 
 <Layout title="tools.ohrt.dev">
@@ -63,7 +69,25 @@ const when = (d: Date) => d.toLocaleString('en-US', { month: 'short', year: 'num
       </ol>
     </section>
   ))}
+  <p class="colophon">
+    Built with <a href="https://astro.build">Astro</a>, rebuilt by GitHub Actions every push, last on {built}. Status
+    from <a href="https://status.ohrt.dev">status.ohrt.dev</a>.{' '}
+    <a href="https://github.com/Lavanic/tools.ohrt.dev">Source</a>.<span class="load-time" hidden></span>
+  </p>
 </Layout>
+
+<script>
+  const line = document.querySelector<HTMLElement>('.load-time');
+  const show = () => {
+    const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
+    const ms = nav ? nav.loadEventEnd - nav.startTime : 0;
+    if (!line || !(ms > 0)) return;
+    line.textContent = `This page loaded for you in ${Math.round(ms)} ms.`;
+    line.hidden = false;
+  };
+  if (document.readyState === 'complete') setTimeout(show);
+  else addEventListener('load', () => setTimeout(show), { once: true });
+</script>
 
 <style>
   .intro {
@@ -175,6 +199,21 @@ const when = (d: Date) => d.toLocaleString('en-US', { month: 'short', year: 'num
     margin: 6px 0 0;
     font-size: 16px;
     color: #e6edf7;
+  }
+
+  .colophon {
+    margin: 36px 0 0;
+    font-size: 13px;
+    color: #9fb6d8;
+  }
+
+  .load-time {
+    display: block;
+    margin-top: 4px;
+  }
+
+  .load-time[hidden] {
+    display: none;
   }
 
   @media (max-width: 47rem) {
