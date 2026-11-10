@@ -66,7 +66,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 </html>
 
 <style is:global>
-  /* the root colour is what shows when you overscroll: header blue above the page, paper below */
+  /* the root colour shows when you overscroll and tints iOS Safari's bars: header blue near the top, paper below */
   html {
     background: #fdfcf9;
   }
@@ -96,7 +96,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 
   body {
     margin: 0;
-    background: #fdfcf9;
+    /* paper as an image, not a colour: WebKit ignores body images when it picks the page colour, so html's wins */
+    background: linear-gradient(#fdfcf9, #fdfcf9);
     color: #23314b;
     font-family: 'Helvetica Neue', helvetica, arial, sans-serif;
     line-height: 1.45;
