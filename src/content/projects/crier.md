@@ -5,4 +5,6 @@ started: 2026-07-06
 language: Go
 status: live
 monitor: crier
+images:
+  - ./images/crier.jpg
 ---
