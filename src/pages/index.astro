@@ -41,41 +41,39 @@ const built = new Date().toLocaleString('en-US', {
                   This repo was set as a public archive on {day(p.archived)}. It is now read-only.
                 </div>
               )}
+              <div class="row">
+                <h3>{p.repo ? <a href={p.repo}>{p.title}</a> : p.title}</h3>
+                <span class="sub">
+                  {p.language}, {when(p.started)}
+                </span>
+                <span class="links">
+                  {p.repo && (
+                    <a href={p.repo} target="_blank" rel="noopener">
+                      source
+                    </a>
+                  )}
+                  {p.monitor && (
+                    <a href={STATUS_PAGE} target="_blank" rel="noopener">
+                      status
+                      <img
+                        class="swirl"
+                        src={`/images/swirl-${swirl(p.monitor)}.gif`}
+                        width="20"
+                        height="20"
+                        alt={(health[p.monitor] ?? 'unknown').toLowerCase()}
+                        title={(health[p.monitor] ?? 'unknown').toLowerCase()}
+                      />
+                    </a>
+                  )}
+                  {p.writeup && (
+                    <a href={p.writeup} target="_blank" rel="noopener">
+                      writeup
+                    </a>
+                  )}
+                </span>
+              </div>
               <div class:list={['body', { stack: (p.images?.length ?? 0) > 1 }]}>
-                <div class="text">
-                  <div class="row">
-                    <h3>{p.repo ? <a href={p.repo}>{p.title}</a> : p.title}</h3>
-                    <span class="sub">
-                      {p.language}, {when(p.started)}
-                    </span>
-                    <span class="links">
-                      {p.repo && (
-                        <a href={p.repo} target="_blank" rel="noopener">
-                          source
-                        </a>
-                      )}
-                      {p.monitor && (
-                        <a href={STATUS_PAGE} target="_blank" rel="noopener">
-                          status
-                          <img
-                            class="swirl"
-                            src={`/images/swirl-${swirl(p.monitor)}.gif`}
-                            width="20"
-                            height="20"
-                            alt={(health[p.monitor] ?? 'unknown').toLowerCase()}
-                            title={(health[p.monitor] ?? 'unknown').toLowerCase()}
-                          />
-                        </a>
-                      )}
-                      {p.writeup && (
-                        <a href={p.writeup} target="_blank" rel="noopener">
-                          writeup
-                        </a>
-                      )}
-                    </span>
-                  </div>
-                  <p>{p.description}</p>
-                </div>
+                <p>{p.description}</p>
                 {p.images && (
                   <div class="media">
                     {fit(p.images).map((img) => (
@@ -187,6 +185,7 @@ const built = new Date().toLocaleString('en-US', {
   }
 
   .links {
+    margin-left: auto;
     font-size: 14px;
     white-space: nowrap;
   }
@@ -215,16 +214,11 @@ const built = new Date().toLocaleString('en-US', {
     align-items: flex-start;
   }
 
-  .text {
-    flex: 1;
-    min-width: 0;
-  }
-
   .media {
     display: flex;
     flex: none;
     gap: 3px;
-    margin-top: 4px;
+    margin: 8px 0 0 auto;
   }
 
   .media :global(img) {
@@ -255,7 +249,8 @@ const built = new Date().toLocaleString('en-US', {
       font-size: min(12px, calc((100vw - 68px) / 36));
     }
 
-    h3 {
+    .sub {
+      order: 1;
       flex-basis: 100%;
     }
 
