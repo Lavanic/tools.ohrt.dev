@@ -20,13 +20,7 @@ const built = new Date().toLocaleString('en-US', {
 ---
 
 <Layout title="tools.ohrt.dev">
-  <p class="intro">
-    Some things I've built
-    <small>
-      Newest first. A green swirl means it's up right now, measured at{' '}
-      <a href="https://status.ohrt.dev">status.ohrt.dev</a>.
-    </small>
-  </p>
+  <p class="intro">Some things I have built organized chronologically:</p>
   {years.map((year) => (
     <section>
       <h2 class="year">{year}</h2>
@@ -93,18 +87,9 @@ const built = new Date().toLocaleString('en-US', {
 
 <style>
   .intro {
-    margin: 0 0 30px;
-    font-family: georgia, serif;
-    font-size: 22px;
-    line-height: 1.4;
-  }
-
-  .intro small {
-    display: block;
-    margin-top: 8px;
-    font-family: 'Helvetica Neue', helvetica, arial, sans-serif;
+    margin: 0 0 10px;
     font-size: 15px;
-    color: #c9d6ea;
+    color: #6b7486;
   }
 
   .year {
