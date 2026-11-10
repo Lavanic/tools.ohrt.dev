@@ -9,6 +9,8 @@ const health = await fetchHealth(main.flatMap((p) => (p.data.monitor ? [p.data.m
 const swirl = (tag: string) => ({ UP: 'green', DOWN: 'red' })[health[tag] as 'UP' | 'DOWN'] ?? 'yellow';
 const years = [...new Set(main.map((p) => p.data.started.getUTCFullYear()))];
 const when = (d: Date) => d.toLocaleString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+const day = (d: Date) =>
+  d.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 const built = new Date().toLocaleString('en-US', {
   day: 'numeric',
   month: 'short',
@@ -33,6 +35,11 @@ const built = new Date().toLocaleString('en-US', {
           .filter((p) => p.data.started.getUTCFullYear() === year)
           .map(({ data: p }) => (
             <li>
+              {p.archived && (
+                <div class="archived">
+                  This repo was set as a public archive on {day(p.archived)}. It is now read-only.
+                </div>
+              )}
               <div class="row">
                 <h3>
                   <span class="name">{p.repo ? <a href={p.repo}>{p.title}</a> : p.title}</span>
@@ -124,6 +131,18 @@ const built = new Date().toLocaleString('en-US', {
 
   section:last-of-type li:last-child {
     border-bottom: 1px solid #e6e1d6;
+  }
+
+  .archived {
+    margin: 0 0 6px;
+    padding: 1px 16px;
+    border-block: 1px solid rgb(212 167 44 / 0.4);
+    background: #fff8c5;
+    color: rgb(31 35 40 / 0.7);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 18px;
+    text-align: center;
   }
 
   .row {
