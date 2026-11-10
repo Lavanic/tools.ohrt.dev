@@ -1,4 +1,6 @@
 ---
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import { fetchHealth, STATUS_PAGE } from '../lib/status';
@@ -11,6 +13,11 @@ const years = [...new Set(main.map((p) => p.data.started.getUTCFullYear()))];
 const when = (d: Date) => d.toLocaleString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
 const day = (d: Date) =>
   d.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+const fit = (images: ImageMetadata[], maxHeight = 88, maxWidth = 240, gap = 3) => {
+  const ratios = images.map((i) => i.width / i.height);
+  const height = Math.min(maxHeight, (maxWidth - gap * (images.length - 1)) / ratios.reduce((a, b) => a + b));
+  return images.map((src, i) => ({ src, width: Math.round(height * ratios[i]), height: Math.round(height) }));
+};
 const built = new Date().toLocaleString('en-US', {
   day: 'numeric',
   month: 'short',
@@ -59,7 +66,16 @@ const built = new Date().toLocaleString('en-US', {
                   {p.writeup && <a href={p.writeup}>writeup</a>}
                 </span>
               </div>
-              <p>{p.description}</p>
+              <div class="body">
+                <p>{p.description}</p>
+                {p.images && (
+                  <div class="media">
+                    {fit(p.images).map((img) => (
+                      <Image {...img} alt="" densities={[1, 2]} />
+                    ))}
+                  </div>
+                )}
+              </div>
             </li>
           ))}
       </ol>
@@ -189,6 +205,25 @@ const built = new Date().toLocaleString('en-US', {
     font-size: 16px;
   }
 
+  .body {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .media {
+    display: flex;
+    flex: none;
+    gap: 3px;
+    margin: 8px 0 0 auto;
+  }
+
+  .media :global(img) {
+    display: block;
+    border: 1px solid #e2ddd1;
+    background: #fff;
+  }
+
   .colophon {
     margin: 36px 0 0;
     font-size: 13px;
@@ -214,6 +249,15 @@ const built = new Date().toLocaleString('en-US', {
     .sub {
       display: block;
       margin: 2px 0 0;
+    }
+
+    .body {
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .media {
+      margin: 10px 0 0;
     }
   }
 </style>
