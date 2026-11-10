@@ -6,6 +6,4 @@ language: Python
 status: live
 repo: https://github.com/UW-UPL/door-counter-v3
 monitor: door-counter
-images:
-  - ./images/door-counter-v3.jpg
 ---

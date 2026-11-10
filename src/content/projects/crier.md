@@ -6,6 +6,4 @@ language: Go
 status: live
 repo: https://github.com/Lavanic/crier
 monitor: crier
-images:
-  - ./images/crier.jpg
 ---
