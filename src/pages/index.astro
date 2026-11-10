@@ -66,7 +66,7 @@ const built = new Date().toLocaleString('en-US', {
                   {p.writeup && <a href={p.writeup}>writeup</a>}
                 </span>
               </div>
-              <div class="body">
+              <div class:list={['body', { stack: (p.images?.length ?? 0) > 1 }]}>
                 <p>{p.description}</p>
                 {p.images && (
                   <div class="media">
@@ -251,12 +251,12 @@ const built = new Date().toLocaleString('en-US', {
       margin: 2px 0 0;
     }
 
-    .body {
+    .stack {
       flex-direction: column;
       gap: 0;
     }
 
-    .media {
+    .stack .media {
       margin: 10px 0 0;
     }
   }
