@@ -5,5 +5,4 @@ started: 2024-11-09
 language: JavaScript
 status: hackathon
 repo: https://github.com/Lavanic/madshell
-minor: true
 ---
