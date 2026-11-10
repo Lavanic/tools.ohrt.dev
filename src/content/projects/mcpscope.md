@@ -5,5 +5,5 @@ started: 2026-11-02
 language: Rust
 status: maintained
 repo: https://github.com/Lavanic/mcpscope
-minor: true
+wip: true
 ---

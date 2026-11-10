@@ -5,5 +5,5 @@ started: 2026-10-14
 language: Python
 status: hackathon
 repo: https://github.com/Lavanic/truman
-minor: true
+wip: true
 ---

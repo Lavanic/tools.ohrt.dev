@@ -6,7 +6,7 @@ import Layout from '../layouts/Layout.astro';
 import { fetchHealth, STATUS_PAGE } from '../lib/status';
 
 const all = (await getCollection('projects')).sort((a, b) => b.data.started.getTime() - a.data.started.getTime());
-const main = all.filter((p) => !p.data.minor);
+const main = all.filter((p) => !p.data.wip);
 const health = await fetchHealth(main.flatMap((p) => (p.data.monitor ? [p.data.monitor] : [])));
 const swirl = (tag: string) => ({ UP: 'green', DOWN: 'red' })[health[tag] as 'UP' | 'DOWN'] ?? 'yellow';
 const years = [...new Set(main.map((p) => p.data.started.getUTCFullYear()))];

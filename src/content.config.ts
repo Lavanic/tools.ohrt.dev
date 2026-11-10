@@ -13,7 +13,7 @@ const projects = defineCollection({
       repo: z.string().url().optional(),
       writeup: z.string().url().optional(),
       monitor: z.string().optional(),
-      minor: z.boolean().default(false),
+      wip: z.boolean().default(false),
       archived: z.coerce.date().optional(),
       images: z.array(image()).optional(),
     }),
