@@ -6,4 +6,6 @@ language: Python
 status: hackathon
 repo: https://github.com/Lavanic/truman
 wip: true
+images:
+  - ./images/truman.jpg
 ---
