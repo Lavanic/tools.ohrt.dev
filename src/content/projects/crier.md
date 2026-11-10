@@ -4,6 +4,7 @@ description: A single-binary Go bot that watches 135 job boards and pages my pho
 started: 2026-07-06
 language: Go
 status: live
+repo: https://github.com/Lavanic/crier
 monitor: crier
 images:
   - ./images/crier.jpg
