@@ -95,7 +95,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   }
 
   .banner {
-    height: 150px;
+    height: 75px;
     background:
       linear-gradient(rgb(30 45 69 / 0.5), rgb(30 45 69 / 0.5)),
       url('/images/header.png') center / cover;
@@ -110,8 +110,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   }
 
   .logo {
-    flex: 0 1 360px;
+    flex: 0 1 288px;
     min-width: 0;
+    /* puts the t's stem on the nav text's left edge */
+    margin-left: -6px;
   }
 
   .chrome {
@@ -178,7 +180,12 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     }
 
     .banner {
-      height: 110px;
+      height: 55px;
+    }
+
+    .logo {
+      flex-basis: 208px;
+      margin-left: -4px;
     }
   }
 </style>
