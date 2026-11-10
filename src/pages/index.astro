@@ -205,6 +205,12 @@ const built = new Date().toLocaleString('en-US', {
   }
 
   @media (max-width: 47rem) {
+    .archived {
+      padding: 1px 6px;
+      /* scales with the screen so the sentence stays on one line */
+      font-size: min(12px, calc((100vw - 68px) / 36));
+    }
+
     .sub {
       display: block;
       margin: 2px 0 0;
