@@ -1,0 +1,51 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="404 - tools.ohrt.dev" description="Page not found." noindex>
+  <div class="notfound">
+    <img src="/images/404.webp" width="800" height="1200" alt="" />
+    <div>
+      <h1>error 404</h1>
+      <p>the page you're looking for doesn't exist lol.</p>
+      <a href="/">&larr; take me home</a>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .notfound {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    margin-top: 14px;
+  }
+
+  .notfound h1 {
+    margin: 0 0 0.3em;
+    font-size: 1.4em;
+    line-height: 1.4;
+    color: #172238;
+  }
+
+  .notfound p {
+    margin: 0 0 0.6em;
+  }
+
+  .notfound img {
+    width: 45%;
+    height: auto;
+    align-self: stretch;
+    object-fit: cover;
+  }
+
+  @media (max-width: 560px) {
+    .notfound {
+      flex-direction: column;
+    }
+
+    .notfound img {
+      width: 100%;
+    }
+  }
+</style>

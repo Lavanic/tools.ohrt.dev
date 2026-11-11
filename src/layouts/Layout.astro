@@ -2,9 +2,10 @@
 interface Props {
   title: string;
   description?: string;
+  noindex?: boolean;
 }
 
-const { title, description = "Oliver Ohrt's tools and projects." } = Astro.props;
+const { title, description = "Oliver Ohrt's tools and projects.", noindex = false } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
 
@@ -17,13 +18,16 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta name="darkreader-lock" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta property="og:site_name" content="Oliver Ohrt" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary" />
+    <link rel="sitemap" href="/sitemap.xml" />
   </head>
   <body>
     <header>
@@ -47,7 +51,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
       <nav class="bar">
         <div class="bar-inner">
           <span>
-            <a href="/" aria-current="page">
+            <a href="/" aria-current={Astro.url.pathname === '/' ? 'page' : undefined}>
               projects
             </a>
             <a href="https://blog.ohrt.dev">weblog</a>
