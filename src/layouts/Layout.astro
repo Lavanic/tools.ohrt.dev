@@ -70,9 +70,25 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 </html>
 
 <style is:global>
-  /* the root colour shows when you overscroll and tints iOS Safari's bars: header blue near the top, paper below */
+  :root {
+    --page: #ebebeb;
+    --ink: #141414;
+    --dim: #4f4f4f;
+    --link: #1474b8;
+    --link-hover: #0f578a;
+  }
+
+  *,
+  ::before,
+  ::after {
+    box-sizing: border-box;
+  }
+
+  /* the root colour shows when you overscroll and tints iOS Safari's bars: header blue near the top, page grey below */
   html {
-    background: #fdfcf9;
+    background: var(--page);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
 
   @supports (animation-timeline: scroll()) {
@@ -94,37 +110,52 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 
     50%,
     100% {
-      background-color: #fdfcf9;
+      background-color: #ebebeb;
     }
   }
 
   body {
     margin: 0;
-    /* paper as an image, not a colour: WebKit ignores body images when it picks the page colour, so html's wins */
-    background: linear-gradient(#fdfcf9, #fdfcf9);
-    color: #23314b;
-    font-family: 'Helvetica Neue', helvetica, arial, sans-serif;
-    line-height: 1.45;
+    /* the grey as an image, not a colour: WebKit ignores body images when it picks the page colour, so html's wins */
+    background: linear-gradient(var(--page), var(--page));
+    color: var(--ink);
+    font:
+      0.9375rem / 1.4 'Segoe UI',
+      'Helvetica Neue',
+      Helvetica,
+      Roboto,
+      Oxygen,
+      Ubuntu,
+      Cantarell,
+      'Fira Sans',
+      'Droid Sans',
+      sans-serif;
+    overflow-wrap: break-word;
   }
 
   a {
-    color: #2f55a4;
+    color: var(--link);
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--link-hover);
+    text-decoration: underline;
   }
 
   h1,
   h2,
   h3 {
     margin: 0;
-    font-family: georgia, serif;
-    font-weight: normal;
+    font-weight: 400;
   }
 
   .banner-inner,
   .bar-inner,
   .wrapper {
-    max-width: calc(46rem - 40px);
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 0 38px;
+    padding: 0 10px;
   }
 
   .banner {
@@ -143,7 +174,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   .logo {
     flex: 0 1 288px;
     min-width: 0;
-    /* puts the t's stem on the nav text's left edge */
+    /* puts the t's stem on the page's left edge */
     margin-left: -6px;
   }
 
@@ -163,10 +194,11 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     justify-content: space-between;
     align-items: center;
     height: 32px;
-    font-size: 14px;
+    font-size: 0.875rem;
   }
 
-  .bar a {
+  .bar a,
+  .bar a:hover {
     color: #fff;
     text-decoration: none;
   }
@@ -187,29 +219,11 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 
   .wrapper {
     min-height: 60vh;
-    padding-top: 16px;
-    padding-bottom: 80px;
+    padding-top: 10px;
+    padding-bottom: 20px;
   }
 
-  .mono {
-    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
-    font-size: 12.5px;
-    letter-spacing: 0.2px;
-    color: #6b7486;
-  }
-
-  @media (max-width: 47rem) {
-    .banner-inner,
-    .bar-inner {
-      padding: 0 20px;
-    }
-
-    .wrapper {
-      margin: 0 16px;
-      padding-left: 12px;
-      padding-right: 12px;
-    }
-
+  @media (max-width: 650px) {
     .banner {
       height: 55px;
     }
