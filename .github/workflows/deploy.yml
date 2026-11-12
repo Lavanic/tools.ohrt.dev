@@ -3,7 +3,7 @@ name: Deploy Astro site to Pages
 on:
   push:
     branches: ['main']
-  # the status swirls are baked at build time, so rebuild on a timer too
+  # the star and commit numbers are baked at build time, so rebuild on a timer too
   schedule:
     - cron: '17 */6 * * *'
   workflow_dispatch:

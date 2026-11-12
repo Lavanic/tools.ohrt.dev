@@ -4,16 +4,11 @@ import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import { fetchRepos } from '../lib/github';
-import { fetchHealth, STATUS_PAGE } from '../lib/status';
 
 const all = (await getCollection('projects')).sort((a, b) => b.data.started.getTime() - a.data.started.getTime());
 const main = all.filter((p) => !p.data.wip);
-const [health, repos] = await Promise.all([
-  fetchHealth(main.flatMap((p) => (p.data.monitor ? [p.data.monitor] : []))),
-  fetchRepos(main.flatMap((p) => (p.data.repo ? [p.data.repo] : []))),
-]);
+const repos = await fetchRepos(main.flatMap((p) => (p.data.repo ? [p.data.repo] : [])));
 const count = new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 });
-const swirl = (tag: string) => ({ UP: 'green', DOWN: 'red' })[health[tag] as 'UP' | 'DOWN'] ?? 'yellow';
 const years = [...new Set(main.map((p) => p.data.started.getUTCFullYear()))];
 const when = (d: Date) => d.toLocaleString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
 const day = (d: Date) =>
@@ -78,16 +73,8 @@ const built = new Date().toLocaleString('en-US', {
                       </a>
                     )}
                     {p.monitor && (
-                      <a href={STATUS_PAGE} target="_blank" rel="noopener">
+                      <a href="https://status.ohrt.dev" target="_blank" rel="noopener">
                         status
-                        <img
-                          class="swirl"
-                          src={`/images/swirl-${swirl(p.monitor)}.gif`}
-                          width="20"
-                          height="20"
-                          alt={(health[p.monitor] ?? 'unknown').toLowerCase()}
-                          title={(health[p.monitor] ?? 'unknown').toLowerCase()}
-                        />
                       </a>
                     )}
                     {p.writeup && (
@@ -266,15 +253,6 @@ const built = new Date().toLocaleString('en-US', {
 
   .links > * + * {
     margin-left: 12px;
-  }
-
-  .swirl {
-    width: 20px;
-    height: 20px;
-    /* pulled in top and bottom so the swirl doesn't make its line taller than the others */
-    margin: -2px 0 -2px 3px;
-    vertical-align: -5px;
-    image-rendering: pixelated;
   }
 
   .stats-inline {
