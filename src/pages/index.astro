@@ -41,10 +41,11 @@ const years = [...new Set(main.map((p) => p.data.started.getUTCFullYear()))];
 const when = (d: Date) => d.toLocaleString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
 const day = (d: Date) =>
   d.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
-const fit = (images: ImageMetadata[], maxHeight = 36, maxWidth = 150, gap = 3) => {
-  const ratios = images.map((i) => i.width / i.height);
-  const height = Math.min(maxHeight, (maxWidth - gap * (images.length - 1)) / ratios.reduce((a, b) => a + b));
-  return images.map((src, i) => ({ src, width: Math.round(height * ratios[i]), height: Math.round(height) }));
+type Shot = { src: ImageMetadata; caption?: string };
+const fit = (shots: Shot[], maxHeight = 36, maxWidth = 150, gap = 3) => {
+  const ratios = shots.map(({ src }) => src.width / src.height);
+  const height = Math.min(maxHeight, (maxWidth - gap * (shots.length - 1)) / ratios.reduce((a, b) => a + b));
+  return shots.map((shot, i) => ({ ...shot, width: Math.round(height * ratios[i]), height: Math.round(height) }));
 };
 ---
 
@@ -126,14 +127,15 @@ const fit = (images: ImageMetadata[], maxHeight = 36, maxWidth = 150, gap = 3) =
                             data-sub={`${p.language}, ${when(p.started)}`}
                             data-href={p.repo}
                           >
-                            {fit(p.images).map((img, i, all) => (
+                            {fit(p.images).map(({ src, caption, width, height }, i, all) => (
                               <a
-                                href={img.src.src}
-                                aria-label={`${p.title} ${i + 1}/${all.length}`}
-                                data-w={img.src.width}
-                                data-h={img.src.height}
+                                href={src.src}
+                                aria-label={caption ?? `${p.title} ${i + 1}/${all.length}`}
+                                data-w={src.width}
+                                data-h={src.height}
+                                data-caption={caption}
                               >
-                                <Image {...img} alt="" densities={[1, 2]} />
+                                <Image src={src} width={width} height={height} alt="" densities={[1, 2]} />
                               </a>
                             ))}
                           </div>

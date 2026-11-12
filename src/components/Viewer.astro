@@ -23,6 +23,7 @@ import { icon } from '../lib/icons';
     <figure>
       <img alt="" draggable="false" />
       <figcaption>
+        <p></p>
         <b></b>
         <a target="_blank" rel="noopener"></a>
       </figcaption>
@@ -54,6 +55,7 @@ import { icon } from '../lib/icons';
       // the thumbnail, stretched, stands in until the full image arrives
       img.style.backgroundImage = `url("${link.querySelector('img')!.currentSrc}")`;
       img.alt = link.ariaLabel ?? '';
+      part('figcaption p').textContent = link.dataset.caption ?? '';
       img.removeAttribute('src');
       img.src = open.href = save.href = link.href;
       part('.count').textContent = `${at + 1} / ${group.length}`;
@@ -309,7 +311,7 @@ import { icon } from '../lib/icons';
 
   /* as large as it is, or as large as fits: the room left over is what the caption and thumbnails need */
   figure img {
-    --room: 150px;
+    --room: 175px;
     width: min(calc(var(--w) * 1px), 100vw - 8px, (100dvh - var(--room)) * var(--w) / var(--h));
     height: auto;
     aspect-ratio: var(--w) / var(--h);
@@ -319,13 +321,23 @@ import { icon } from '../lib/icons';
   }
 
   .single figure img {
-    --room: 100px;
+    --room: 125px;
   }
 
   figcaption {
     padding: 14px 0 10px;
     line-height: 1.375;
     text-align: center;
+  }
+
+  /* what the picture shows, then whose it is */
+  figcaption p {
+    margin: 0 0 4px;
+    text-wrap: balance;
+  }
+
+  figcaption p:empty {
+    display: none;
   }
 
   figcaption b {

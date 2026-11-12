@@ -8,5 +8,5 @@ status: hackathon
 repo: https://github.com/Lavanic/truman
 wip: true
 images:
-  - ./images/truman.jpg
+  - src: ./images/truman.jpg
 ---

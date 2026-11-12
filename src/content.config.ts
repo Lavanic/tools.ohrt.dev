@@ -18,7 +18,8 @@ const projects = defineCollection({
       monitor: z.string().optional(),
       wip: z.boolean().default(false),
       archived: z.coerce.date().optional(),
-      images: z.array(image()).optional(),
+      /** src opens in the viewer over its caption */
+      images: z.array(z.object({ src: image(), caption: z.string().optional() })).optional(),
     }),
 });
 
