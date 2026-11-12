@@ -1,7 +1,7 @@
 ---
 import type { ImageMetadata } from 'astro';
-import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
+import Thumbnail from '../components/Thumbnail.astro';
 import Viewer from '../components/Viewer.astro';
 import Layout from '../layouts/Layout.astro';
 import { fetchRepos, type Repo } from '../lib/github';
@@ -41,9 +41,10 @@ const years = [...new Set(main.map((p) => p.data.started.getUTCFullYear()))];
 const when = (d: Date) => d.toLocaleString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
 const day = (d: Date) =>
   d.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
-type Shot = { src: ImageMetadata; caption?: string };
+type Shot = { src: ImageMetadata; poster?: ImageMetadata; preview?: ImageMetadata; caption?: string };
+// a thumbnail is drawn from the picture itself, or from its poster when the picture is an animation
 const fit = (shots: Shot[], maxHeight = 36, maxWidth = 150, gap = 3) => {
-  const ratios = shots.map(({ src }) => src.width / src.height);
+  const ratios = shots.map(({ src, poster = src }) => poster.width / poster.height);
   const height = Math.min(maxHeight, (maxWidth - gap * (shots.length - 1)) / ratios.reduce((a, b) => a + b));
   return shots.map((shot, i) => ({ ...shot, width: Math.round(height * ratios[i]), height: Math.round(height) }));
 };
@@ -127,15 +128,16 @@ const fit = (shots: Shot[], maxHeight = 36, maxWidth = 150, gap = 3) => {
                             data-sub={`${p.language}, ${when(p.started)}`}
                             data-href={p.repo}
                           >
-                            {fit(p.images).map(({ src, caption, width, height }, i, all) => (
+                            {fit(p.images).map(({ src, poster, preview, caption, width, height }, i, all) => (
                               <a
                                 href={src.src}
                                 aria-label={caption ?? `${p.title} ${i + 1}/${all.length}`}
                                 data-w={src.width}
                                 data-h={src.height}
                                 data-caption={caption}
+                                data-animated={!!poster || undefined}
                               >
-                                <Image src={src} width={width} height={height} alt="" densities={[1, 2]} />
+                                <Thumbnail src={poster ?? src} preview={preview} width={width} height={height} />
                               </a>
                             ))}
                           </div>

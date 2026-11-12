@@ -18,8 +18,20 @@ const projects = defineCollection({
       monitor: z.string().optional(),
       wip: z.boolean().default(false),
       archived: z.coerce.date().optional(),
-      /** src opens in the viewer over its caption */
-      images: z.array(z.object({ src: image(), caption: z.string().optional() })).optional(),
+      /**
+       * src opens in the viewer over its caption. An animation also names a poster, the still that stands for it,
+       * and may name a preview, a small loop to play as its thumbnail.
+       */
+      images: z
+        .array(
+          z.object({
+            src: image(),
+            poster: image().optional(),
+            preview: image().optional(),
+            caption: z.string().optional(),
+          }),
+        )
+        .optional(),
     }),
 });
 

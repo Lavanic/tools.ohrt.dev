@@ -1,0 +1,26 @@
+---
+import type { ImageMetadata } from 'astro';
+import { Image, getImage } from 'astro:assets';
+
+interface Props {
+  /** the picture, or the poster of an animation */
+  src: ImageMetadata;
+  /** a small loop that plays in the poster's place */
+  preview?: ImageMetadata;
+  width: number;
+  height: number;
+}
+
+const { src, preview, width, height } = Astro.props;
+// the loop is served as it was made; visitors who asked for less motion get the poster instead
+const still = preview && (await getImage({ src, width, height, densities: [1, 2] }));
+---
+
+{preview && still ? (
+  <picture>
+    <source media="(prefers-reduced-motion: reduce)" srcset={still.srcSet.attribute} />
+    <img src={preview.src} width={width} height={height} alt="" loading="lazy" decoding="async" />
+  </picture>
+) : (
+  <Image src={src} width={width} height={height} alt="" densities={[1, 2]} />
+)}

@@ -60,8 +60,9 @@ import { icon } from '../lib/icons';
       img.src = open.href = save.href = link.href;
       part('.count').textContent = `${at + 1} / ${group.length}`;
       [...thumbs.children].forEach((thumb, n) => thumb.setAttribute('aria-current', String(n === at)));
-      // have the next one ready before it is asked for
-      if (group.length > 1) new Image().src = group[(at + 1) % group.length].href;
+      // have the next one ready before it is asked for; an animation is big and waits until it is
+      const next = group[(at + 1) % group.length];
+      if (next !== link && !next.matches('[data-animated]')) new Image().src = next.href;
     };
 
     let downX = 0;
@@ -92,6 +93,10 @@ import { icon } from '../lib/icons';
 
     viewer.addEventListener('close', () => {
       if (document.fullscreenElement) void document.exitFullscreen();
+      // once it has faded out, let go of the picture: an animation would go on arriving unseen
+      setTimeout(() => {
+        if (!viewer.open) img.removeAttribute('src');
+      }, 200);
     });
 
     part('.full').hidden = !document.fullscreenEnabled;
@@ -108,7 +113,7 @@ import { icon } from '../lib/icons';
           const button = document.createElement('button');
           button.type = 'button';
           button.title = other.ariaLabel ?? '';
-          button.append(other.querySelector('img')!.cloneNode());
+          button.append(other.firstElementChild!.cloneNode(true));
           button.addEventListener('click', () => show(n));
           return button;
         }),
@@ -133,9 +138,10 @@ import { icon } from '../lib/icons';
     (view ??= mount())(link);
   });
 
-  // start fetching the full image while the pointer is still on its way to a click
+  // start fetching the full picture while the pointer is still on its way to a click;
+  // an animation is too big to fetch on a guess
   document.addEventListener('pointerover', (e) => {
-    const link = e.target instanceof Element && e.target.closest<HTMLAnchorElement>('.media a');
+    const link = e.target instanceof Element && e.target.closest<HTMLAnchorElement>('.media a:not([data-animated])');
     if (!link || link.dataset.warm) return;
     link.dataset.warm = '1';
     new Image().src = link.href;
