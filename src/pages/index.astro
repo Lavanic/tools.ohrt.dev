@@ -58,11 +58,6 @@ const built = new Date().toLocaleString('en-US', {
           .map(({ data: p }) => ({ p, repo: p.repo ? repos[p.repo] : undefined }))
           .map(({ p, repo }) => (
             <li>
-              {p.archived && (
-                <div class="archived">
-                  This repo was set as a public archive on {day(p.archived)}. It is now read-only.
-                </div>
-              )}
               <div class:list={['node', { active: !p.archived && active(repo?.last) }]}>
                 <span class="node-icon" aria-hidden="true" set:html={icon(p.icon)} />
                 <div class="node-main">
@@ -70,6 +65,14 @@ const built = new Date().toLocaleString('en-US', {
                   <span class="sub">
                     {p.language}, {when(p.started)}
                   </span>
+                  {p.archived && (
+                    <span
+                      class="label"
+                      title={`This repo was set as a public archive on ${day(p.archived)}. It is now read-only.`}
+                    >
+                      Public archive
+                    </span>
+                  )}
                   <p>{p.description}</p>
                   <div class="links">
                     {p.repo && (
@@ -200,17 +203,6 @@ const built = new Date().toLocaleString('en-US', {
     border-top: 1px solid var(--line);
   }
 
-  .archived {
-    padding: 1px 16px;
-    border-bottom: 1px solid rgb(212 167 44 / 0.4);
-    background: #fff8c5;
-    color: rgb(31 35 40 / 0.7);
-    font-size: 12px;
-    font-weight: 600;
-    line-height: 18px;
-    text-align: center;
-  }
-
   .node {
     display: flex;
     align-items: center;
@@ -243,16 +235,37 @@ const built = new Date().toLocaleString('en-US', {
     padding: 10px;
   }
 
+  /* the gaps trail each piece, so one that wraps to a new line starts flush with the text */
   h3 {
     display: inline;
+    margin-right: 6px;
     font-size: 1.0625rem;
   }
 
   .sub {
-    margin-left: 6px;
+    margin-right: 6px;
     font-size: 0.8125rem;
     color: var(--muted);
     white-space: nowrap;
+  }
+
+  /* a glossy badge from around 2010: split at the middle like the nav bar, lit along the top edge */
+  .label {
+    display: inline-block;
+    padding: 0 6px;
+    border: 1px solid #c9a227;
+    border-radius: 3px;
+    background: linear-gradient(to bottom, #fff8c9 0%, #ffe98a 50%, #f8d95a 51%, #fde793 100%);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.75),
+      0 1px 1px rgb(0 0 0 / 0.12);
+    color: #5c4700;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    line-height: 1.45;
+    text-shadow: 0 1px 0 rgb(255 255 255 / 0.6);
+    white-space: nowrap;
+    vertical-align: 2px;
   }
 
   .node-main p {
@@ -376,12 +389,6 @@ const built = new Date().toLocaleString('en-US', {
 
     .block-header {
       border-radius: 0;
-    }
-
-    .archived {
-      padding: 1px 6px;
-      /* scales with the screen so the sentence stays on one line */
-      font-size: min(12px, calc((100vw - 12px) / 36));
     }
 
     .node {
