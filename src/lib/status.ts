@@ -1,10 +1,8 @@
+import { warn } from './warn';
+
 export const STATUS_PAGE = 'https://status.ohrt.dev';
 
 export type Health = 'UP' | 'DEGRADED' | 'DOWN' | 'MAINTENANCE' | 'NO_DATA';
-
-// ::warning:: makes the line show up on the GitHub Actions run summary, not just in the log
-const warn = (msg: string) =>
-  console.warn(`${process.env.GITHUB_ACTIONS ? '::warning title=status::' : '[status] '}${msg}`);
 
 export async function fetchHealth(tags: string[]): Promise<Record<string, Health>> {
   if (tags.length === 0) return {};
@@ -17,10 +15,10 @@ export async function fetchHealth(tags: string[]): Promise<Record<string, Health
       data: Record<string, { currentStatus: Health }>;
       missingTags?: string[];
     };
-    if (missingTags.length) warn(`unknown monitor tags: ${missingTags.join(', ')}`);
+    if (missingTags.length) warn('status', `unknown monitor tags: ${missingTags.join(', ')}`);
     return Object.fromEntries(Object.entries(data).map(([tag, m]) => [tag, m.currentStatus]));
   } catch (err) {
-    warn(`${err}, the swirls fall back to yellow`);
+    warn('status', `${err}, the swirls fall back to yellow`);
     return {};
   }
 }

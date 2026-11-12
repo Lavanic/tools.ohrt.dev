@@ -37,6 +37,9 @@ jobs:
         run: npm run check
       - name: Build with Astro
         run: npx astro build
+        env:
+          # read-only, for the star and commit counts
+          GITHUB_TOKEN: ${{ github.token }}
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
         with:

@@ -3,11 +3,16 @@ import type { ImageMetadata } from 'astro';
 import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
+import { fetchRepos } from '../lib/github';
 import { fetchHealth, STATUS_PAGE } from '../lib/status';
 
 const all = (await getCollection('projects')).sort((a, b) => b.data.started.getTime() - a.data.started.getTime());
 const main = all.filter((p) => !p.data.wip);
-const health = await fetchHealth(main.flatMap((p) => (p.data.monitor ? [p.data.monitor] : [])));
+const [health, repos] = await Promise.all([
+  fetchHealth(main.flatMap((p) => (p.data.monitor ? [p.data.monitor] : []))),
+  fetchRepos(main.flatMap((p) => (p.data.repo ? [p.data.repo] : []))),
+]);
+const count = new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 });
 const swirl = (tag: string) => ({ UP: 'green', DOWN: 'red' })[health[tag] as 'UP' | 'DOWN'] ?? 'yellow';
 const years = [...new Set(main.map((p) => p.data.started.getUTCFullYear()))];
 const when = (d: Date) => d.toLocaleString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
@@ -47,7 +52,8 @@ const built = new Date().toLocaleString('en-US', {
       <ol>
         {main
           .filter((p) => p.data.started.getUTCFullYear() === year)
-          .map(({ data: p }) => (
+          .map(({ data: p }) => ({ p, repo: p.repo ? repos[p.repo] : undefined }))
+          .map(({ p, repo }) => (
             <li>
               {p.archived && (
                 <div class="archived">
@@ -86,8 +92,25 @@ const built = new Date().toLocaleString('en-US', {
                         writeup
                       </a>
                     )}
+                    {repo && (
+                      <span class="stats-inline">
+                        Stars {count.format(repo.stars)} · Commits {count.format(repo.commits)}
+                      </span>
+                    )}
                   </div>
                 </div>
+                {repo && (
+                  <div class="node-stats">
+                    <dl>
+                      <dt>Stars</dt>
+                      <dd>{count.format(repo.stars)}</dd>
+                    </dl>
+                    <dl>
+                      <dt>Commits</dt>
+                      <dd>{count.format(repo.commits)}</dd>
+                    </dl>
+                  </div>
+                )}
                 {p.images && (
                   <div class="node-extra">
                     <div class="media">
@@ -232,6 +255,33 @@ const built = new Date().toLocaleString('en-US', {
     image-rendering: pixelated;
   }
 
+  .stats-inline {
+    display: none;
+    color: var(--muted);
+  }
+
+  .node-stats {
+    display: flex;
+    flex: none;
+    width: 140px;
+    text-align: center;
+  }
+
+  .node-stats dl {
+    flex: 1;
+    margin: 0;
+    padding: 0 3px;
+  }
+
+  .node-stats dt {
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  .node-stats dd {
+    margin: 0;
+  }
+
   .node-extra {
     flex: none;
     width: 280px;
@@ -265,6 +315,17 @@ const built = new Date().toLocaleString('en-US', {
 
   .load-time[hidden] {
     display: none;
+  }
+
+  /* no room for the two columns: the numbers move into the line of links */
+  @media (max-width: 1000px) {
+    .node-stats {
+      display: none;
+    }
+
+    .stats-inline {
+      display: inline;
+    }
   }
 
   @media (max-width: 650px) {
