@@ -9,6 +9,12 @@ const { title, description = "Oliver Ohrt's tools and projects.", noindex = fals
 const canonical = new URL(Astro.url.pathname, Astro.site);
 // the home page has no other heading, so its logo is one
 const Logo = Astro.url.pathname === '/' ? 'h1' : 'div';
+const built = new Date().toLocaleString('en-US', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+  timeZone: 'America/Chicago',
+});
 ---
 
 <html lang="en">
@@ -77,8 +83,31 @@ const Logo = Astro.url.pathname === '/' ? 'h1' : 'div';
         <slot />
       </main>
     </div>
+    <footer class="footer">
+      <div class="footer-inner">
+        <p>
+          Built with <a href="https://astro.build">Astro</a>, rebuilt by GitHub Actions every push, last on {built}.
+          Status from <a href="https://status.ohrt.dev">status.ohrt.dev</a>.{' '}
+          <a href="https://github.com/Lavanic/tools.ohrt.dev">Source</a>.
+        </p>
+        <p class="load-time" hidden></p>
+      </div>
+    </footer>
   </body>
 </html>
+
+<script>
+  const line = document.querySelector<HTMLElement>('.load-time');
+  const show = () => {
+    const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
+    const ms = nav ? nav.loadEventEnd - nav.startTime : 0;
+    if (!line || !(ms > 0)) return;
+    line.textContent = `This page loaded for you in ${Math.round(ms)} ms.`;
+    line.hidden = false;
+  };
+  if (document.readyState === 'complete') setTimeout(show);
+  else addEventListener('load', () => setTimeout(show), { once: true });
+</script>
 
 <style is:global>
   :root {
@@ -98,7 +127,7 @@ const Logo = Astro.url.pathname === '/' ? 'h1' : 'div';
     box-sizing: border-box;
   }
 
-  /* the root colour shows when you overscroll and tints iOS Safari's bars: header blue near the top, page grey below */
+  /* the root colour shows when you overscroll and tints iOS Safari's bars: header blue near the top, page grey below, footer grey at the very end */
   html {
     background: var(--page);
     -webkit-text-size-adjust: 100%;
@@ -123,12 +152,22 @@ const Logo = Astro.url.pathname === '/' ? 'h1' : 'div';
     }
 
     50%,
-    100% {
+    99.8% {
       background-color: #ebebeb;
+    }
+
+    99.9%,
+    100% {
+      background-color: #4f4f4f;
     }
   }
 
+  /* a column at least as tall as the screen, so the footer sits at the bottom of a short page */
   body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
     margin: 0;
     /* the grey as an image, not a colour: WebKit ignores body images when it picks the page colour, so html's wins */
     background: linear-gradient(var(--page), var(--page));
@@ -167,7 +206,8 @@ const Logo = Astro.url.pathname === '/' ? 'h1' : 'div';
   .banner-inner,
   .bar-inner,
   .strip-inner,
-  .wrapper {
+  .wrapper,
+  .footer-inner {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 10px;
@@ -265,9 +305,39 @@ const Logo = Astro.url.pathname === '/' ? 'h1' : 'div';
   }
 
   .wrapper {
-    min-height: 60vh;
+    flex: 1;
+    width: 100%;
     padding-top: 10px;
     padding-bottom: 20px;
+  }
+
+  .footer {
+    background: #4f4f4f;
+    color: #e8f4fc;
+    font-size: 0.8125rem;
+  }
+
+  .footer-inner {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0 20px;
+    padding-top: 6px;
+    padding-bottom: 10px;
+  }
+
+  .footer p {
+    margin: 0;
+  }
+
+  /* underlined, since these sit inside a sentence and colour alone would not mark them */
+  .footer a {
+    color: #a3d4f5;
+    text-decoration: underline;
+  }
+
+  .footer a:hover {
+    color: #fff;
   }
 
   @media (max-width: 650px) {

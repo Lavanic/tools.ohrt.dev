@@ -46,12 +46,6 @@ const fit = (images: ImageMetadata[], maxHeight = 36, maxWidth = 150, gap = 3) =
   const height = Math.min(maxHeight, (maxWidth - gap * (images.length - 1)) / ratios.reduce((a, b) => a + b));
   return images.map((src, i) => ({ src, width: Math.round(height * ratios[i]), height: Math.round(height) }));
 };
-const built = new Date().toLocaleString('en-US', {
-  day: 'numeric',
-  month: 'short',
-  year: 'numeric',
-  timeZone: 'America/Chicago',
-});
 ---
 
 <Layout title="tools.ohrt.dev">
@@ -223,25 +217,7 @@ const built = new Date().toLocaleString('en-US', {
     </aside>
   </div>
   <Viewer />
-  <p class="colophon">
-    Built with <a href="https://astro.build">Astro</a>, rebuilt by GitHub Actions every push, last on {built}. Status
-    from <a href="https://status.ohrt.dev">status.ohrt.dev</a>.{' '}
-    <a href="https://github.com/Lavanic/tools.ohrt.dev">Source</a>.<span class="load-time" hidden></span>
-  </p>
 </Layout>
-
-<script>
-  const line = document.querySelector<HTMLElement>('.load-time');
-  const show = () => {
-    const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
-    const ms = nav ? nav.loadEventEnd - nav.startTime : 0;
-    if (!line || !(ms > 0)) return;
-    line.textContent = `This page loaded for you in ${Math.round(ms)} ms.`;
-    line.hidden = false;
-  };
-  if (document.readyState === 'complete') setTimeout(show);
-  else addEventListener('load', () => setTimeout(show), { once: true });
-</script>
 
 <style>
   .intro {
@@ -503,21 +479,6 @@ const built = new Date().toLocaleString('en-US', {
 
   .media a:hover :global(img) {
     border-color: var(--link);
-  }
-
-  .colophon {
-    margin: 0;
-    font-size: 0.8125rem;
-    color: var(--dim);
-  }
-
-  .load-time {
-    display: block;
-    margin-top: 4px;
-  }
-
-  .load-time[hidden] {
-    display: none;
   }
 
   /* no room for the two columns beside the sidebar: the numbers move into the line of links */
