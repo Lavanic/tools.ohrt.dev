@@ -7,6 +7,8 @@ interface Props {
 
 const { title, description = "Oliver Ohrt's tools and projects.", noindex = false } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
+// the home page has no other heading, so its logo is one
+const Logo = Astro.url.pathname === '/' ? 'h1' : 'div';
 ---
 
 <html lang="en">
@@ -33,19 +35,21 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <header>
       <div class="banner">
         <div class="banner-inner">
-          <a class="logo" href="/">
-            <picture>
-              <source srcset="/images/logo_still.webp" media="(prefers-reduced-motion: reduce)" />
-              <img
-                class="chrome"
-                src="/images/logo_spin.webp"
-                srcset="/images/logo_spin.webp 1x, /images/logo_spin@2x.webp 2x"
-                alt="tools.ohrt.dev"
-                width="360"
-                height="54"
-              />
-            </picture>
-          </a>
+          <Logo class="logo">
+            <a href="/">
+              <picture>
+                <source srcset="/images/logo_still.webp" media="(prefers-reduced-motion: reduce)" />
+                <img
+                  class="chrome"
+                  src="/images/logo_spin.webp"
+                  srcset="/images/logo_spin.webp 1x, /images/logo_spin@2x.webp 2x"
+                  alt="tools.ohrt.dev"
+                  width="360"
+                  height="54"
+                />
+              </picture>
+            </a>
+          </Logo>
         </div>
       </div>
       <nav class="bar" aria-label="Sites">
@@ -187,6 +191,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     min-width: 0;
     /* puts the t's stem on the open tab's left edge */
     margin-left: -7px;
+  }
+
+  .logo a {
+    display: block;
   }
 
   .chrome {
