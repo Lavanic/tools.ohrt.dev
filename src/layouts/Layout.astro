@@ -311,6 +311,15 @@ const built = new Date().toLocaleString('en-US', {
     padding-bottom: 20px;
   }
 
+  /* the white box everything on the page sits in */
+  .block {
+    margin-bottom: 20px;
+    border: 1px solid;
+    border-color: #e0e0e0 #d6d6d6 #ccc;
+    border-radius: 4px;
+    background: #fff;
+  }
+
   .footer {
     background: #4f4f4f;
     color: #e8f4fc;
@@ -343,6 +352,13 @@ const built = new Date().toLocaleString('en-US', {
   @media (max-width: 650px) {
     .banner {
       height: 55px;
+    }
+
+    /* blocks run edge to edge on a phone */
+    .block {
+      margin-inline: -10px;
+      border-inline: 0;
+      border-radius: 0;
     }
 
     .logo {
