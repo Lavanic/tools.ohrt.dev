@@ -199,12 +199,12 @@ const fit = (images: ImageMetadata[], maxHeight = 36, maxWidth = 150, gap = 3) =
           {known.length > 0 && (
             <>
               <dl>
-                <dt>Commits</dt>
-                <dd>{sum((repo) => repo.commits)}</dd>
-              </dl>
-              <dl>
                 <dt>Stars</dt>
                 <dd>{sum((repo) => repo.stars)}</dd>
+              </dl>
+              <dl>
+                <dt>Commits</dt>
+                <dd>{sum((repo) => repo.commits)}</dd>
               </dl>
             </>
           )}
