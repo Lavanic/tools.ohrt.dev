@@ -124,8 +124,8 @@ const built = new Date().toLocaleString('en-US', {
                           {repo.last.message}
                         </a>
                         <div class="commit-meta">
-                          <time datetime={repo.last.date}>{day(new Date(repo.last.date))}</time> ·{' '}
-                          {repo.last.sha.slice(0, 7)}
+                          <time datetime={repo.last.date}>{day(new Date(repo.last.date))}</time>
+                          <span class="sha">{repo.last.sha.slice(0, 7)}</span>
                         </div>
                       </>
                     )}
@@ -305,17 +305,27 @@ const built = new Date().toLocaleString('en-US', {
     margin-left: 10px;
   }
 
-  /* each on one line, cut with an ellipsis, like the forum's last post */
-  .commit,
-  .commit-meta {
+  /* one line, cut with an ellipsis, like the forum's last post */
+  .commit {
     display: block;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
   }
 
+  /* one line as well: when thumbnails leave no room for the hash it wraps out of sight whole, instead of being cut mid-way */
   .commit-meta {
+    display: flex;
+    flex-wrap: wrap;
+    height: 1.4em;
+    overflow: hidden;
     color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .sha::before {
+    margin: 0 0.35em;
+    content: '·';
   }
 
   .media a {
