@@ -1,7 +1,7 @@
 ---
 title: madshell
 icon: square-terminal
-description: A modern terminal emulator that uses AI to convert natural language into shell commands.
+description: Terminal emulator that uses AI to turn natural language to shell commands.
 started: 2024-11-09
 language: JavaScript
 status: hackathon

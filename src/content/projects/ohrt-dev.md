@@ -1,7 +1,7 @@
 ---
 title: ohrt.dev
 icon: globe
-description: This family of sites. My retro homepage, a weblog, and the page you are reading.
+description: This family of sites. My retro homepage, a weblog, and this page.
 started: 2023-04-01
 language: Astro
 status: live
