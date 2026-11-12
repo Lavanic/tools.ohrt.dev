@@ -1,5 +1,6 @@
 ---
 title: door-counter-v3
+icon: door-open
 description: People counter at the UPL door on a Raspberry Pi in Madison, with a Discord bot that broadcasts the count.
 started: 2025-12-01
 language: Python

@@ -13,6 +13,12 @@ const years = [...new Set(main.map((p) => p.data.started.getUTCFullYear()))];
 const when = (d: Date) => d.toLocaleString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
 const day = (d: Date) =>
   d.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+const icons = import.meta.glob<string>('../icons/*.svg', { query: '?raw', import: 'default', eager: true });
+const icon = (name: string) => {
+  const svg = icons[`../icons/${name}.svg`];
+  if (!svg) throw new Error(`no icon named "${name}" in src/icons`);
+  return svg;
+};
 const fit = (images: ImageMetadata[], maxHeight = 36, maxWidth = 150, gap = 3) => {
   const ratios = images.map((i) => i.width / i.height);
   const height = Math.min(maxHeight, (maxWidth - gap * (images.length - 1)) / ratios.reduce((a, b) => a + b));
@@ -49,6 +55,7 @@ const built = new Date().toLocaleString('en-US', {
                 </div>
               )}
               <div class="node">
+                <span class="node-icon" aria-hidden="true" set:html={icon(p.icon)} />
                 <div class="node-main">
                   <h3>{p.repo ? <a href={p.repo}>{p.title}</a> : p.title}</h3>
                   <span class="sub">
@@ -170,6 +177,19 @@ const built = new Date().toLocaleString('en-US', {
     align-items: center;
   }
 
+  .node-icon {
+    flex: none;
+    width: 46px;
+    padding-left: 10px;
+    color: #c6e4f9;
+  }
+
+  .node-icon :global(svg) {
+    display: block;
+    width: 36px;
+    height: 36px;
+  }
+
   .node-main {
     flex: 1;
     min-width: 0;
@@ -269,9 +289,10 @@ const built = new Date().toLocaleString('en-US', {
       flex-wrap: wrap;
     }
 
+    /* under the text, not under the icon */
     .node-extra {
       flex-basis: 100%;
-      padding-top: 0;
+      padding: 0 10px 10px 56px;
     }
 
     .media {

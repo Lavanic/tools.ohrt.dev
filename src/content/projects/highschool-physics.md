@@ -1,5 +1,6 @@
 ---
 title: highschool-physics
+icon: atom
 description: Little swing apps for high school physics labs.
 started: 2022-03-20
 language: Java

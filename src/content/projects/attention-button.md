@@ -1,5 +1,6 @@
 ---
 title: attention-button
+icon: lightbulb
 description: Physical push button for long distance light manipulation.
 started: 2022-10-27
 language: C++

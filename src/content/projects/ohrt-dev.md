@@ -1,5 +1,6 @@
 ---
 title: ohrt.dev
+icon: globe
 description: This family of sites. My retro homepage, a weblog, and the page you are reading.
 started: 2023-04-01
 language: Astro

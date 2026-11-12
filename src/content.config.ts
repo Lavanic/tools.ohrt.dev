@@ -6,6 +6,7 @@ const projects = defineCollection({
   schema: ({ image }) =>
     z.object({
       title: z.string(),
+      icon: z.string(),
       description: z.string(),
       started: z.coerce.date(),
       language: z.string(),
