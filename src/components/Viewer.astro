@@ -1,0 +1,386 @@
+---
+import { icon } from '../lib/icons';
+---
+
+<!-- In a template so the page carries no dialog, and no empty links, until someone opens a picture. -->
+<template id="viewer">
+  <dialog class="viewer" aria-label="Image viewer">
+    <div class="tools">
+      <span class="count"></span>
+      <a
+        class="button open"
+        title="Open in new window"
+        target="_blank"
+        rel="noopener"
+        set:html={icon('external-link')}
+      />
+      <button class="button full" type="button" title="Toggle full-screen mode" set:html={icon('maximize')} />
+      <a class="button save" title="Download" download set:html={icon('download')} />
+      <button class="button close" type="button" title="Close" autofocus set:html={icon('x')} />
+    </div>
+    <button class="nav prev" type="button" title="Previous" set:html={icon('chevron-left')} />
+    <button class="nav next" type="button" title="Next" set:html={icon('chevron-right')} />
+    <figure>
+      <img alt="" draggable="false" />
+      <figcaption>
+        <b></b>
+        <a target="_blank" rel="noopener"></a>
+      </figcaption>
+    </figure>
+    <div class="thumbs"></div>
+  </dialog>
+</template>
+
+<script>
+  /** Builds the viewer from its template and returns the function that opens it on a thumbnail's link. */
+  function mount() {
+    document.body.append(document.querySelector<HTMLTemplateElement>('#viewer')!.content);
+    const viewer = document.querySelector<HTMLDialogElement>('.viewer')!;
+    const part = <T extends HTMLElement = HTMLElement>(selector: string) => viewer.querySelector<T>(selector)!;
+    const figure = part('figure');
+    const img = part<HTMLImageElement>('figure img');
+    const open = part<HTMLAnchorElement>('.open');
+    const save = part<HTMLAnchorElement>('.save');
+    const credit = part<HTMLAnchorElement>('figcaption a');
+    const thumbs = part('.thumbs');
+    let group: HTMLAnchorElement[] = [];
+    let at = 0;
+
+    const show = (i: number) => {
+      at = (i + group.length) % group.length;
+      const link = group[at];
+      img.style.setProperty('--w', link.dataset.w!);
+      img.style.setProperty('--h', link.dataset.h!);
+      // the thumbnail, stretched, stands in until the full image arrives
+      img.style.backgroundImage = `url("${link.querySelector('img')!.currentSrc}")`;
+      img.alt = link.ariaLabel ?? '';
+      img.removeAttribute('src');
+      img.src = open.href = save.href = link.href;
+      part('.count').textContent = `${at + 1} / ${group.length}`;
+      [...thumbs.children].forEach((thumb, n) => thumb.setAttribute('aria-current', String(n === at)));
+      // have the next one ready before it is asked for
+      if (group.length > 1) new Image().src = group[(at + 1) % group.length].href;
+    };
+
+    let downX = 0;
+    let swiped = false;
+    figure.addEventListener('pointerdown', (e) => (downX = e.clientX));
+    figure.addEventListener('pointerup', (e) => {
+      const dx = e.clientX - downX;
+      swiped = Math.abs(dx) > 50;
+      if (swiped && group.length > 1) show(at + (dx < 0 ? 1 : -1));
+    });
+
+    viewer.addEventListener('click', (e) => {
+      const target = e.target as Element;
+      // a drag across the picture ends in a click too; it has already turned the page
+      if (swiped) swiped = false;
+      else if (target.closest('.prev')) show(at - 1);
+      else if (target.closest('.next')) show(at + 1);
+      else if (target.closest('.full'))
+        void (document.fullscreenElement ? document.exitFullscreen() : viewer.requestFullscreen());
+      // the close button, or anywhere that is not the picture, its caption or a control
+      else if (target.closest('.close') || target === viewer || target === figure) viewer.close();
+    });
+
+    viewer.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') show(at - 1);
+      if (e.key === 'ArrowRight') show(at + 1);
+    });
+
+    viewer.addEventListener('close', () => {
+      if (document.fullscreenElement) void document.exitFullscreen();
+    });
+
+    part('.full').hidden = !document.fullscreenEnabled;
+
+    return (link: HTMLAnchorElement) => {
+      const media = link.parentElement!;
+      group = [...media.querySelectorAll('a')];
+      part('figcaption b').textContent = media.dataset.title ?? '';
+      credit.textContent = media.dataset.sub ?? '';
+      if (media.dataset.href) credit.href = media.dataset.href;
+      else credit.removeAttribute('href');
+      thumbs.replaceChildren(
+        ...group.map((other, n) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.title = other.ariaLabel ?? '';
+          button.append(other.querySelector('img')!.cloneNode());
+          button.addEventListener('click', () => show(n));
+          return button;
+        }),
+      );
+      viewer.classList.toggle('single', group.length < 2);
+      show(group.indexOf(link));
+
+      // the page loses its scrollbar while the viewer is up; pad by its width so nothing shifts
+      const root = document.documentElement;
+      root.style.setProperty('--gutter', `${innerWidth - root.clientWidth}px`);
+      viewer.showModal();
+    };
+  }
+
+  let view: ReturnType<typeof mount> | undefined;
+
+  document.addEventListener('click', (e) => {
+    const link = (e.target as Element).closest<HTMLAnchorElement>('.media a');
+    // a modified click still opens the image the usual way
+    if (!link || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+    (view ??= mount())(link);
+  });
+
+  // start fetching the full image while the pointer is still on its way to a click
+  document.addEventListener('pointerover', (e) => {
+    const link = e.target instanceof Element && e.target.closest<HTMLAnchorElement>('.media a');
+    if (!link || link.dataset.warm) return;
+    link.dataset.warm = '1';
+    new Image().src = link.href;
+  });
+</script>
+
+<style>
+  /* The look of the forum's image viewer (Fancybox), on a native dialog. */
+  .viewer {
+    flex-direction: column;
+    width: 100vw;
+    max-width: none;
+    height: 100vh;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    background: none;
+    color: #dbdbdb;
+    opacity: 0;
+    /* display and overlay ride along so the fade also plays on the way out */
+    transition:
+      opacity 0.2s ease,
+      display 0.2s allow-discrete,
+      overlay 0.2s allow-discrete;
+  }
+
+  .viewer::backdrop {
+    background: rgb(24 24 27 / 0.98);
+    opacity: 0;
+    transition:
+      opacity 0.2s ease,
+      display 0.2s allow-discrete,
+      overlay 0.2s allow-discrete;
+  }
+
+  .viewer[open] {
+    display: flex;
+    opacity: 1;
+  }
+
+  .viewer[open]::backdrop {
+    opacity: 1;
+  }
+
+  @starting-style {
+    .viewer[open],
+    .viewer[open]::backdrop {
+      opacity: 0;
+    }
+
+    .viewer[open] figure {
+      transform: scale(0.975) translateY(16px);
+    }
+  }
+
+  :global(html:has(.viewer[open])) {
+    overflow: hidden;
+  }
+
+  :global(html:has(.viewer[open]) body) {
+    padding-right: var(--gutter, 0);
+  }
+
+  .tools {
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 1;
+    display: flex;
+  }
+
+  .count {
+    margin-right: auto;
+    padding: 0 10px;
+    font-size: 1.0625rem;
+    line-height: 46px;
+    font-variant-numeric: tabular-nums;
+    cursor: default;
+    user-select: none;
+  }
+
+  .button,
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    color: inherit;
+    cursor: pointer;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
+  }
+
+  .button:hover,
+  .nav:hover {
+    color: #fff;
+  }
+
+  .button {
+    width: 46px;
+    height: 46px;
+    background: rgb(24 24 27 / 0.65);
+  }
+
+  .button:hover {
+    background: rgb(70 70 73 / 0.65);
+  }
+
+  .button[hidden] {
+    display: none;
+  }
+
+  .button :global(svg) {
+    width: 24px;
+    height: 24px;
+    stroke-width: 1.5;
+  }
+
+  /* arrows only show with the thumbnail strip, so they centre on the room above it */
+  .nav {
+    position: absolute;
+    top: calc(50% - 24px);
+    z-index: 1;
+    width: 50px;
+    height: 50px;
+    margin-top: -25px;
+    border-radius: 50%;
+    background: none;
+  }
+
+  .nav:hover {
+    background: rgb(24 24 27 / 0.3);
+  }
+
+  .nav :global(svg) {
+    width: 26px;
+    height: 26px;
+    stroke-width: 2.5;
+    filter: drop-shadow(1px 1px 1px rgb(24 24 27 / 0.5));
+  }
+
+  .prev {
+    left: 1rem;
+  }
+
+  .next {
+    right: 1rem;
+  }
+
+  .single .count,
+  .single .nav,
+  .single .thumbs {
+    display: none;
+  }
+
+  figure {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    margin: 0;
+    padding: 4px;
+    /* sideways drags turn the page; the browser keeps vertical scrolling and pinching */
+    touch-action: pan-y pinch-zoom;
+    transition: transform 0.2s ease-out;
+  }
+
+  /* as large as it is, or as large as fits: the room left over is what the caption and thumbnails need */
+  figure img {
+    --room: 150px;
+    width: min(calc(var(--w) * 1px), 100vw - 8px, (100dvh - var(--room)) * var(--w) / var(--h));
+    height: auto;
+    aspect-ratio: var(--w) / var(--h);
+    border-radius: 5px;
+    background: center / 100% 100% no-repeat;
+    user-select: none;
+  }
+
+  .single figure img {
+    --room: 100px;
+  }
+
+  figcaption {
+    padding: 14px 0 10px;
+    line-height: 1.375;
+    text-align: center;
+  }
+
+  figcaption b {
+    display: block;
+  }
+
+  figcaption a {
+    color: #ccc;
+  }
+
+  figcaption a:hover {
+    color: #fff;
+  }
+
+  .thumbs {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    padding: 0 4px 8px;
+  }
+
+  .thumbs :global(button) {
+    padding: 0;
+    border: 0;
+    border-radius: 2px;
+    background: none;
+    opacity: 0.6;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+  }
+
+  .thumbs :global(button:hover),
+  .thumbs :global([aria-current='true']) {
+    opacity: 1;
+  }
+
+  .thumbs :global([aria-current='true']) {
+    outline: 2px solid #ededed;
+  }
+
+  .thumbs :global(img) {
+    display: block;
+    border-radius: 2px;
+  }
+
+  .viewer :global(:focus-visible) {
+    outline: 2px solid #ededed;
+    outline-offset: -2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .viewer,
+    .viewer::backdrop,
+    figure {
+      transition: none;
+    }
+  }
+</style>

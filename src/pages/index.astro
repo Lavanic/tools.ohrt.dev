@@ -2,8 +2,10 @@
 import type { ImageMetadata } from 'astro';
 import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
+import Viewer from '../components/Viewer.astro';
 import Layout from '../layouts/Layout.astro';
 import { fetchRepos } from '../lib/github';
+import { icon } from '../lib/icons';
 
 const all = (await getCollection('projects')).sort((a, b) => b.data.started.getTime() - a.data.started.getTime());
 const main = all.filter((p) => !p.data.wip);
@@ -13,12 +15,6 @@ const years = [...new Set(main.map((p) => p.data.started.getUTCFullYear()))];
 const when = (d: Date) => d.toLocaleString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
 const day = (d: Date) =>
   d.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
-const icons = import.meta.glob<string>('../icons/*.svg', { query: '?raw', import: 'default', eager: true });
-const icon = (name: string) => {
-  const svg = icons[`../icons/${name}.svg`];
-  if (!svg) throw new Error(`no icon named "${name}" in src/icons`);
-  return svg;
-};
 const fit = (images: ImageMetadata[], maxHeight = 36, maxWidth = 150, gap = 3) => {
   const ratios = images.map((i) => i.width / i.height);
   const height = Math.min(maxHeight, (maxWidth - gap * (images.length - 1)) / ratios.reduce((a, b) => a + b));
@@ -104,9 +100,19 @@ const built = new Date().toLocaleString('en-US', {
                 {(p.images || repo?.last) && (
                   <div class="node-extra">
                     {p.images && (
-                      <div class="media">
+                      <div
+                        class="media"
+                        data-title={p.title}
+                        data-sub={`${p.language}, ${when(p.started)}`}
+                        data-href={p.repo}
+                      >
                         {fit(p.images).map((img, i, all) => (
-                          <a href={img.src.src} aria-label={`${p.title} ${i + 1}/${all.length}`}>
+                          <a
+                            href={img.src.src}
+                            aria-label={`${p.title} ${i + 1}/${all.length}`}
+                            data-w={img.src.width}
+                            data-h={img.src.height}
+                          >
                             <Image {...img} alt="" densities={[1, 2]} />
                           </a>
                         ))}
@@ -131,6 +137,7 @@ const built = new Date().toLocaleString('en-US', {
       </ol>
     </section>
   ))}
+  <Viewer />
   <p class="colophon">
     Built with <a href="https://astro.build">Astro</a>, rebuilt by GitHub Actions every push, last on {built}. Status
     from <a href="https://status.ohrt.dev">status.ohrt.dev</a>.{' '}
