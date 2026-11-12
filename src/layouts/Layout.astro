@@ -48,18 +48,25 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
           </a>
         </div>
       </div>
-      <nav class="bar">
+      <nav class="bar" aria-label="Sites">
         <div class="bar-inner">
-          <span>
-            <a href="/" aria-current={Astro.url.pathname === '/' ? 'page' : undefined}>
-              projects
-            </a>
-            <a href="https://blog.ohrt.dev">weblog</a>
-            <a href="https://ohrt.dev">ohrt.dev</a>
-          </span>
-          <a href="https://status.ohrt.dev">status</a>
+          <a href="/" aria-current={Astro.url.pathname === '/' ? 'page' : undefined}>
+            projects
+          </a>
+          <a href="https://blog.ohrt.dev">weblog</a>
+          <a href="https://ohrt.dev">ohrt.dev</a>
+          <a class="end" href="https://status.ohrt.dev">
+            status
+          </a>
         </div>
       </nav>
+      {Astro.slots.has('sections') && (
+        <nav class="strip" aria-label="On this page">
+          <div class="strip-inner">
+            <slot name="sections" />
+          </div>
+        </nav>
+      )}
     </header>
     <div class="wrapper">
       <main>
@@ -72,6 +79,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 <style is:global>
   :root {
     --page: #ebebeb;
+    --strip: #f5f5f5;
     --ink: #141414;
     --dim: #4f4f4f;
     --link: #1474b8;
@@ -152,6 +160,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 
   .banner-inner,
   .bar-inner,
+  .strip-inner,
   .wrapper {
     max-width: 1200px;
     margin: 0 auto;
@@ -174,8 +183,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   .logo {
     flex: 0 1 288px;
     min-width: 0;
-    /* puts the t's stem on the page's left edge */
-    margin-left: -6px;
+    /* puts the t's stem on the open tab's left edge */
+    margin-left: -7px;
   }
 
   .chrome {
@@ -191,30 +200,58 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 
   .bar-inner {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 32px;
-    font-size: 0.875rem;
+    align-items: flex-end;
   }
 
-  .bar a,
-  .bar a:hover {
+  .bar a {
+    padding: 8px 15px;
     color: #fff;
     text-decoration: none;
+    transition: background-color 0.25s ease;
   }
 
-  .bar span a {
-    margin-right: 20px;
+  .bar a:hover {
+    background: rgb(255 255 255 / 0.12);
   }
 
-  .bar a:hover,
+  /* the open tab takes the strip's colour, so the two read as one surface */
   .bar a[aria-current='page'] {
-    text-decoration: underline;
-    text-underline-offset: 3px;
+    border-radius: 2px 2px 0 0;
+    background: var(--strip);
+    color: var(--ink);
+    font-weight: 700;
   }
 
-  .bar a:focus-visible {
-    outline: 1px dotted #fff;
+  .bar .end {
+    margin-left: auto;
+    padding-inline: 10px;
+  }
+
+  .strip {
+    border-bottom: 1px solid #ccc;
+    background: var(--strip);
+    font-size: 0.8125rem;
+  }
+
+  /* 2px here plus 8px on each link puts the first link's text on the page's left edge */
+  .strip-inner {
+    padding-inline: 2px;
+  }
+
+  .strip a {
+    display: inline-block;
+    padding: 6px 8px;
+    color: var(--ink);
+  }
+
+  .strip a:hover {
+    color: var(--link-hover);
+  }
+
+  .bar a:focus-visible,
+  .strip a:focus-visible {
+    outline: 2px solid currentcolor;
+    outline-offset: -3px;
   }
 
   .wrapper {
@@ -230,7 +267,13 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 
     .logo {
       flex-basis: 208px;
-      margin-left: -4px;
+      margin-left: -5px;
+    }
+  }
+
+  @media (max-width: 340px) {
+    .bar a {
+      padding-inline: 11px;
     }
   }
 </style>

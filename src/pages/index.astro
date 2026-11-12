@@ -27,9 +27,14 @@ const built = new Date().toLocaleString('en-US', {
 ---
 
 <Layout title="tools.ohrt.dev">
+  <Fragment slot="sections">
+    {years.map((year) => (
+      <a href={`#${year}`}>{year}</a>
+    ))}
+  </Fragment>
   <p class="intro">Some things I have built organized chronologically:</p>
   {years.map((year) => (
-    <section>
+    <section id={String(year)}>
       <h2 class="year">{year}</h2>
       <ol>
         {main
