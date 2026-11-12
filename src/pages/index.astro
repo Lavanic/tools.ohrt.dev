@@ -70,18 +70,17 @@ const fit = (images: ImageMetadata[], maxHeight = 36, maxWidth = 150, gap = 3) =
                   <div class="node">
                     <span class="node-icon" aria-hidden="true" set:html={icon(p.icon)} />
                     <div class="node-main">
-                      <h3>{p.repo ? <a href={p.repo}>{p.title}</a> : p.title}</h3>
-                      <span class="sub">
-                        {p.language}, {when(p.started)}
-                      </span>
-                      {p.archived && (
-                        <span
-                          class="label"
-                          title={`This repo was set as a public archive on ${day(p.archived)}. It is now read-only.`}
-                        >
-                          Public archive
+                      <div class="node-title">
+                        <h3>{p.repo ? <a href={p.repo}>{p.title}</a> : p.title}</h3>
+                        <span class="sub">
+                          {p.language}, {when(p.started)}
                         </span>
-                      )}
+                        {p.archived && (
+                          <span class="label">
+                            This repo was set as a public archive on {day(p.archived)}. It is now read-only.
+                          </span>
+                        )}
+                      </div>
                       <p>{p.description}</p>
                       <div class="links">
                         {p.repo && (
@@ -329,7 +328,14 @@ const fit = (images: ImageMetadata[], maxHeight = 36, maxWidth = 150, gap = 3) =
     border-top: 1px solid var(--line);
   }
 
+  /* a row knows its own width, to place its archive notice */
+  ol > li {
+    container-type: inline-size;
+  }
+
   .node {
+    --stats: 140px;
+    --extra: 280px;
     display: flex;
     align-items: center;
   }
@@ -354,8 +360,13 @@ const fit = (images: ImageMetadata[], maxHeight = 36, maxWidth = 150, gap = 3) =
   }
 
   /* the gaps trail each piece, so one that wraps to a new line starts flush with the text */
+  .node-title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+  }
+
   h3 {
-    display: inline;
     margin-right: 6px;
     font-size: 1.0625rem;
   }
@@ -367,19 +378,60 @@ const fit = (images: ImageMetadata[], maxHeight = 36, maxWidth = 150, gap = 3) =
     white-space: nowrap;
   }
 
-  /* the pale yellow of GitHub's archive notice */
+  /* the archive notice, in the pale yellow of GitHub's, reaching the far edge of the row */
   .label {
-    display: inline-block;
-    padding: 1px 0.45em;
-    border: 1px solid rgb(212 167 44 / 0.6);
-    border-radius: 4px;
+    --pad: 1px;
+    --reach: calc(var(--stats) + var(--extra) + 10px);
+    overflow: hidden;
+    margin-right: calc(-1 * var(--reach));
+    padding: var(--pad) 6px;
+    border: solid rgb(212 167 44 / 0.4);
     background: #fff8c5;
-    color: rgb(31 35 40 / 0.75);
+    color: rgb(31 35 40 / 0.7);
     font-size: 0.75rem;
     font-weight: 600;
     line-height: 1.26;
+    text-align: center;
+    text-overflow: ellipsis;
     white-space: nowrap;
-    vertical-align: 1px;
+  }
+
+  /* trimmed to its capitals, the sentence sits in the middle of the band whatever the font */
+  @supports (text-box: trim-both cap alphabetic) {
+    .label {
+      --pad: 4px;
+      text-box: trim-both cap alphabetic;
+    }
+  }
+
+  /* with room beside the title it is a band from the date on, and what stands beside the title moves under it */
+  @container (width > 760px) {
+    .label {
+      flex: 1;
+      border-width: 1px 0;
+    }
+
+    .node:has(.label) > :is(.node-stats, .node-extra) {
+      align-self: flex-end;
+      padding-top: 0;
+    }
+
+    .node:has(.label) > .node-stats {
+      padding-bottom: 10px;
+    }
+  }
+
+  /* without, it lies across the top of the row, as small as it takes to stay on one line */
+  @container (width <= 760px) {
+    .label {
+      order: -1;
+      flex: none;
+      width: calc(100% + 56px + var(--reach));
+      margin: -10px calc(-1 * var(--reach)) 10px -56px;
+      padding-block: calc(var(--pad) + 2px);
+      border-width: 0 0 1px;
+      font-size: min(0.75rem, (100cqw - 12px) / 36);
+    }
   }
 
   .node-main p {
@@ -405,7 +457,7 @@ const fit = (images: ImageMetadata[], maxHeight = 36, maxWidth = 150, gap = 3) =
   .node-stats {
     display: flex;
     flex: none;
-    width: 140px;
+    width: var(--stats);
     text-align: center;
   }
 
@@ -426,7 +478,7 @@ const fit = (images: ImageMetadata[], maxHeight = 36, maxWidth = 150, gap = 3) =
 
   .node-extra {
     flex: none;
-    width: 280px;
+    width: var(--extra);
     padding: 10px;
     font-size: 0.8125rem;
   }
@@ -478,6 +530,10 @@ const fit = (images: ImageMetadata[], maxHeight = 36, maxWidth = 150, gap = 3) =
 
   /* no room for the two columns beside the sidebar: the numbers move into the line of links */
   @media (max-width: 1100px) {
+    .node {
+      --stats: 0px;
+    }
+
     .node-stats {
       display: none;
     }
@@ -515,6 +571,7 @@ const fit = (images: ImageMetadata[], maxHeight = 36, maxWidth = 150, gap = 3) =
     }
 
     .node {
+      --extra: 0px;
       flex-wrap: wrap;
     }
 
