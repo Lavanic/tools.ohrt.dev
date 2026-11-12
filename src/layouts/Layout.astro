@@ -48,7 +48,8 @@ const built = new Date().toLocaleString('en-US', {
                 <img
                   class="chrome"
                   src="/images/logo_spin.webp"
-                  srcset="/images/logo_spin.webp 1x, /images/logo_spin@2x.webp 2x"
+                  srcset="/images/logo_spin.webp 360w, /images/logo_spin@2x.webp 720w"
+                  sizes="180px"
                   alt="tools.ohrt.dev"
                   width="360"
                   height="54"
@@ -214,7 +215,7 @@ const built = new Date().toLocaleString('en-US', {
   }
 
   .banner {
-    height: 75px;
+    height: 46px;
     background: #3a587a;
     border-bottom: 1px solid #1d2a42;
   }
@@ -227,10 +228,10 @@ const built = new Date().toLocaleString('en-US', {
   }
 
   .logo {
-    flex: 0 1 288px;
+    flex: 0 1 180px;
     min-width: 0;
     /* puts the t's stem on the open tab's left edge */
-    margin-left: -7px;
+    margin-left: -4.4px;
   }
 
   .logo a {
@@ -241,7 +242,7 @@ const built = new Date().toLocaleString('en-US', {
     display: block;
     width: 100%;
     height: auto;
-    filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.5));
+    filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.5));
   }
 
   .bar {
@@ -350,20 +351,11 @@ const built = new Date().toLocaleString('en-US', {
   }
 
   @media (max-width: 650px) {
-    .banner {
-      height: 55px;
-    }
-
     /* blocks run edge to edge on a phone */
     .block {
       margin-inline: -10px;
       border-inline: 0;
       border-radius: 0;
-    }
-
-    .logo {
-      flex-basis: 208px;
-      margin-left: -5px;
     }
   }
 
