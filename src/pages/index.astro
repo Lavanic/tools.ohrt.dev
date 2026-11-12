@@ -111,13 +111,26 @@ const built = new Date().toLocaleString('en-US', {
                     </dl>
                   </div>
                 )}
-                {p.images && (
+                {(p.images || repo?.last) && (
                   <div class="node-extra">
-                    <div class="media">
-                      {fit(p.images).map((img) => (
-                        <Image {...img} alt="" densities={[1, 2]} />
-                      ))}
-                    </div>
+                    {p.images && (
+                      <div class="media">
+                        {fit(p.images).map((img) => (
+                          <Image {...img} alt="" densities={[1, 2]} />
+                        ))}
+                      </div>
+                    )}
+                    {repo?.last && (
+                      <>
+                        <a class="commit" href={repo.last.url} title={repo.last.message} target="_blank" rel="noopener">
+                          {repo.last.message}
+                        </a>
+                        <div class="commit-meta">
+                          <time datetime={repo.last.date}>{day(new Date(repo.last.date))}</time> ·{' '}
+                          {repo.last.sha.slice(0, 7)}
+                        </div>
+                      </>
+                    )}
                   </div>
                 )}
               </div>
@@ -291,8 +304,22 @@ const built = new Date().toLocaleString('en-US', {
 
   .media {
     display: flex;
-    justify-content: flex-end;
+    float: right;
     gap: 3px;
+    margin-left: 10px;
+  }
+
+  /* each on one line, cut with an ellipsis, like the forum's last post */
+  .commit,
+  .commit-meta {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .commit-meta {
+    color: var(--muted);
   }
 
   .media :global(img) {
@@ -353,11 +380,13 @@ const built = new Date().toLocaleString('en-US', {
     /* under the text, not under the icon */
     .node-extra {
       flex-basis: 100%;
+      margin-top: -4px;
       padding: 0 10px 10px 56px;
     }
 
     .media {
-      justify-content: flex-start;
+      float: none;
+      margin: 0 0 6px;
     }
   }
 </style>

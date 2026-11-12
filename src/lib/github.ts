@@ -5,6 +5,14 @@ import { warn } from './warn';
 export interface Repo {
   stars: number;
   commits: number;
+  /** the newest commit on the default branch */
+  last?: { message: string; date: string; sha: string; url: string };
+}
+
+interface Commit {
+  sha: string;
+  html_url: string;
+  commit: { message: string; committer: { date: string } };
 }
 
 // Local builds have no token and GitHub allows them 60 requests an hour, so answers are
@@ -28,13 +36,22 @@ async function get(pathname: string) {
 async function fetchRepo(slug: string): Promise<Repo> {
   const [repo, commits] = await Promise.all([get(`/repos/${slug}`), get(`/repos/${slug}/commits?per_page=1`)]);
   const { stargazers_count: stars } = (await repo.json()) as { stargazers_count: number };
-  const head = (await commits.json()) as unknown[];
+  const [head] = (await commits.json()) as Commit[];
   // one commit per page, so the number of the last page is the number of commits
   const pages = commits.headers.get('link')?.match(/[?&]page=(\d+)>; rel="last"/)?.[1];
-  return { stars, commits: pages ? Number(pages) : head.length };
+  return {
+    stars,
+    commits: pages ? Number(pages) : head ? 1 : 0,
+    last: head && {
+      message: head.commit.message.split('\n', 1)[0],
+      date: head.commit.committer.date,
+      sha: head.sha,
+      url: head.html_url,
+    },
+  };
 }
 
-/** Numbers for GitHub repo URLs, keyed by URL. A repo that can't be reached and was never seen is left out. */
+/** Numbers and the newest commit for GitHub repo URLs, keyed by URL. A repo that can't be reached and was never seen is left out. */
 export async function fetchRepos(urls: string[]): Promise<Record<string, Repo>> {
   const cache: Record<string, { at: number; repo: Repo }> = await readFile(CACHE, 'utf8')
     .then(JSON.parse)
