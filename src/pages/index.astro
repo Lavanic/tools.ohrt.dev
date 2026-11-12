@@ -17,6 +17,10 @@ const recent = projects
   .sort((a, b) => Date.parse(b.commit.date) - Date.parse(a.commit.date))
   .slice(0, 5);
 const count = new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 });
+const exact = new Intl.NumberFormat('en-US');
+const known = projects.flatMap(({ repo }) => (repo ? [repo] : []));
+const sum = (pick: (repo: (typeof known)[number]) => number) =>
+  exact.format(known.reduce((n, repo) => n + pick(repo), 0));
 const years = [...new Set(main.map((p) => p.data.started.getUTCFullYear()))];
 const when = (d: Date) => d.toLocaleString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
 const day = (d: Date) =>
@@ -175,6 +179,31 @@ const built = new Date().toLocaleString('en-US', {
           </p>
         </section>
       )}
+      <section class="block">
+        <h2 class="block-minor">Statistics</h2>
+        <div class="pairs">
+          <dl>
+            <dt>Projects</dt>
+            <dd>{projects.length}</dd>
+          </dl>
+          {known.length > 0 && (
+            <>
+              <dl>
+                <dt>Commits</dt>
+                <dd>{sum((repo) => repo.commits)}</dd>
+              </dl>
+              <dl>
+                <dt>Stars</dt>
+                <dd>{sum((repo) => repo.stars)}</dd>
+              </dl>
+            </>
+          )}
+          <dl>
+            <dt>Latest project</dt>
+            <dd>{projects[0].p.repo ? <a href={projects[0].p.repo}>{projects[0].p.title}</a> : projects[0].p.title}</dd>
+          </dl>
+        </div>
+      </section>
     </aside>
   </div>
   <Viewer />
@@ -283,6 +312,30 @@ const built = new Date().toLocaleString('en-US', {
   .minor {
     font-size: 0.8125rem;
     color: var(--muted);
+  }
+
+  .pairs {
+    padding: 6px 10px;
+  }
+
+  .pairs dl {
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+    margin: 0;
+  }
+
+  .pairs dt {
+    color: var(--muted);
+  }
+
+  .pairs dt::after {
+    content: ':';
+  }
+
+  .pairs dd {
+    margin: 0;
+    text-align: right;
   }
 
   ol > li + li {
