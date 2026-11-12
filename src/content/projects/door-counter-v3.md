@@ -6,5 +6,7 @@ started: 2025-12-01
 language: Python
 status: live
 repo: https://github.com/UW-UPL/door-counter-v3
+also:
+  - https://github.com/UW-UPL/door-counter-v3-bot
 monitor: door-counter
 ---
