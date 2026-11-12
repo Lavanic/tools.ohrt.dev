@@ -12,6 +12,8 @@ const projects = defineCollection({
       language: z.string(),
       status: z.enum(['live', 'maintained', 'finished', 'hackathon', 'wip']),
       repo: z.string().url().optional(),
+      /** more repos that belong to the same project; their numbers are added to the first one's */
+      also: z.array(z.string().url()).optional(),
       writeup: z.string().url().optional(),
       monitor: z.string().optional(),
       wip: z.boolean().default(false),
