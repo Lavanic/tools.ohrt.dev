@@ -10,6 +10,12 @@ import { icon } from '../lib/icons';
 const all = (await getCollection('projects')).sort((a, b) => b.data.started.getTime() - a.data.started.getTime());
 const main = all.filter((p) => !p.data.wip);
 const repos = await fetchRepos(main.flatMap((p) => (p.data.repo ? [p.data.repo] : [])));
+const projects = main.map(({ data: p }) => ({ p, repo: p.repo ? repos[p.repo] : undefined }));
+// each project's newest commit, newest first; ones with no person behind them (the door counter's sync bot) stay out
+const recent = projects
+  .flatMap(({ p, repo }) => (repo?.last?.author ? [{ p, commit: repo.last }] : []))
+  .sort((a, b) => Date.parse(b.commit.date) - Date.parse(a.commit.date))
+  .slice(0, 5);
 const count = new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 });
 const years = [...new Set(main.map((p) => p.data.started.getUTCFullYear()))];
 const when = (d: Date) => d.toLocaleString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
@@ -35,108 +41,142 @@ const built = new Date().toLocaleString('en-US', {
     ))}
   </Fragment>
   <p class="intro">Some things I have built organized chronologically:</p>
-  {years.map((year) => (
-    <section class="block" id={String(year)}>
-      <h2 class="block-header">
-        <a href={`#${year}`}>{year} Projects</a>
-      </h2>
-      <ol>
-        {main
-          .filter((p) => p.data.started.getUTCFullYear() === year)
-          .map(({ data: p }) => ({ p, repo: p.repo ? repos[p.repo] : undefined }))
-          .map(({ p, repo }) => (
-            <li>
-              <div class="node">
-                <span class="node-icon" aria-hidden="true" set:html={icon(p.icon)} />
-                <div class="node-main">
-                  <h3>{p.repo ? <a href={p.repo}>{p.title}</a> : p.title}</h3>
-                  <span class="sub">
-                    {p.language}, {when(p.started)}
-                  </span>
-                  {p.archived && (
-                    <span
-                      class="label"
-                      title={`This repo was set as a public archive on ${day(p.archived)}. It is now read-only.`}
-                    >
-                      Public archive
-                    </span>
-                  )}
-                  <p>{p.description}</p>
-                  <div class="links">
-                    {p.repo && (
-                      <a href={p.repo} target="_blank" rel="noopener">
-                        source
-                      </a>
-                    )}
-                    {p.monitor && (
-                      <a href="https://status.ohrt.dev" target="_blank" rel="noopener">
-                        status
-                      </a>
-                    )}
-                    {p.writeup && (
-                      <a href={p.writeup} target="_blank" rel="noopener">
-                        writeup
-                      </a>
-                    )}
-                    {repo && (
-                      <span class="stats-inline">
-                        Stars {count.format(repo.stars)} · Commits {count.format(repo.commits)}
+  <div class="columns">
+    <div class="content">
+      {years.map((year) => (
+        <section class="block" id={String(year)}>
+          <h2 class="block-header">
+            <a href={`#${year}`}>{year} Projects</a>
+          </h2>
+          <ol>
+            {projects
+              .filter(({ p }) => p.started.getUTCFullYear() === year)
+              .map(({ p, repo }) => (
+                <li>
+                  <div class="node">
+                    <span class="node-icon" aria-hidden="true" set:html={icon(p.icon)} />
+                    <div class="node-main">
+                      <h3>{p.repo ? <a href={p.repo}>{p.title}</a> : p.title}</h3>
+                      <span class="sub">
+                        {p.language}, {when(p.started)}
                       </span>
-                    )}
-                  </div>
-                </div>
-                {repo && (
-                  <div class="node-stats">
-                    <dl>
-                      <dt>Stars</dt>
-                      <dd>{count.format(repo.stars)}</dd>
-                    </dl>
-                    <dl>
-                      <dt>Commits</dt>
-                      <dd>{count.format(repo.commits)}</dd>
-                    </dl>
-                  </div>
-                )}
-                {(p.images || repo?.last) && (
-                  <div class="node-extra">
-                    {p.images && (
-                      <div
-                        class="media"
-                        data-title={p.title}
-                        data-sub={`${p.language}, ${when(p.started)}`}
-                        data-href={p.repo}
-                      >
-                        {fit(p.images).map((img, i, all) => (
-                          <a
-                            href={img.src.src}
-                            aria-label={`${p.title} ${i + 1}/${all.length}`}
-                            data-w={img.src.width}
-                            data-h={img.src.height}
-                          >
-                            <Image {...img} alt="" densities={[1, 2]} />
+                      {p.archived && (
+                        <span
+                          class="label"
+                          title={`This repo was set as a public archive on ${day(p.archived)}. It is now read-only.`}
+                        >
+                          Public archive
+                        </span>
+                      )}
+                      <p>{p.description}</p>
+                      <div class="links">
+                        {p.repo && (
+                          <a href={p.repo} target="_blank" rel="noopener">
+                            source
                           </a>
-                        ))}
+                        )}
+                        {p.monitor && (
+                          <a href="https://status.ohrt.dev" target="_blank" rel="noopener">
+                            status
+                          </a>
+                        )}
+                        {p.writeup && (
+                          <a href={p.writeup} target="_blank" rel="noopener">
+                            writeup
+                          </a>
+                        )}
+                        {repo && (
+                          <span class="stats-inline">
+                            Stars {count.format(repo.stars)} · Commits {count.format(repo.commits)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    {repo && (
+                      <div class="node-stats">
+                        <dl>
+                          <dt>Stars</dt>
+                          <dd>{count.format(repo.stars)}</dd>
+                        </dl>
+                        <dl>
+                          <dt>Commits</dt>
+                          <dd>{count.format(repo.commits)}</dd>
+                        </dl>
                       </div>
                     )}
-                    {repo?.last && (
-                      <>
-                        <a class="commit" href={repo.last.url} title={repo.last.message} target="_blank" rel="noopener">
-                          {repo.last.message}
-                        </a>
-                        <div class="commit-meta">
-                          <time datetime={repo.last.date}>{day(new Date(repo.last.date))}</time>
-                          <span class="sha">{repo.last.sha.slice(0, 7)}</span>
-                        </div>
-                      </>
+                    {(p.images || repo?.last) && (
+                      <div class="node-extra">
+                        {p.images && (
+                          <div
+                            class="media"
+                            data-title={p.title}
+                            data-sub={`${p.language}, ${when(p.started)}`}
+                            data-href={p.repo}
+                          >
+                            {fit(p.images).map((img, i, all) => (
+                              <a
+                                href={img.src.src}
+                                aria-label={`${p.title} ${i + 1}/${all.length}`}
+                                data-w={img.src.width}
+                                data-h={img.src.height}
+                              >
+                                <Image {...img} alt="" densities={[1, 2]} />
+                              </a>
+                            ))}
+                          </div>
+                        )}
+                        {repo?.last && (
+                          <>
+                            <a
+                              class="commit"
+                              href={repo.last.url}
+                              title={repo.last.message}
+                              target="_blank"
+                              rel="noopener"
+                            >
+                              {repo.last.message}
+                            </a>
+                            <div class="commit-meta">
+                              <time datetime={repo.last.date}>{day(new Date(repo.last.date))}</time>
+                              <span class="sha">{repo.last.sha.slice(0, 7)}</span>
+                            </div>
+                          </>
+                        )}
+                      </div>
                     )}
                   </div>
-                )}
-              </div>
-            </li>
-          ))}
-      </ol>
-    </section>
-  ))}
+                </li>
+              ))}
+          </ol>
+        </section>
+      ))}
+    </div>
+    <aside class="sidebar">
+      {recent.length > 0 && (
+        <section class="block">
+          <h2 class="block-minor">Recent commits</h2>
+          <ul class="log">
+            {recent.map(({ p, commit }) => (
+              <li>
+                <div class="minor">
+                  <time datetime={commit.date}>{day(new Date(commit.date))}</time> :{' '}
+                  <a href={commit.url} target="_blank" rel="noopener">
+                    {commit.sha.slice(0, 7)}
+                  </a>
+                </div>
+                <span class="minor-name">{p.title}</span> {commit.message}
+              </li>
+            ))}
+          </ul>
+          <p class="block-foot">
+            <a href="https://github.com/Lavanic?tab=repositories" target="_blank" rel="noopener">
+              see the rest
+            </a>
+          </p>
+        </section>
+      )}
+    </aside>
+  </div>
   <Viewer />
   <p class="colophon">
     Built with <a href="https://astro.build">Astro</a>, rebuilt by GitHub Actions every push, last on {built}. Status
@@ -164,6 +204,23 @@ const built = new Date().toLocaleString('en-US', {
     color: var(--dim);
   }
 
+  /* the projects, and beside them a sidebar the width of the forum's */
+  .columns {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .sidebar {
+    flex: none;
+    width: 250px;
+  }
+
   .block {
     margin-bottom: 20px;
     border: 1px solid;
@@ -186,13 +243,49 @@ const built = new Date().toLocaleString('en-US', {
     color: inherit;
   }
 
-  ol {
+  .block-minor {
+    padding: 6px 10px;
+    color: var(--link);
+    font-size: 1.0625rem;
+  }
+
+  ol,
+  .log {
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
-  li + li {
+  /* plain text, in the manner of the changelog on ohrt.dev: date and hash, then what changed */
+  .log {
+    padding: 0 10px 4px;
+    font-size: 0.8125rem;
+  }
+
+  .log li {
+    padding-bottom: 6px;
+  }
+
+  .minor-name {
+    color: var(--muted);
+  }
+
+  .block-foot {
+    margin: 0;
+    padding: 6px 10px;
+    border-top: 1px solid var(--line);
+    border-radius: 0 0 3px 3px;
+    background: linear-gradient(180deg, #f5f5f5, #fafafa);
+    color: var(--dim);
+    font-size: 0.75rem;
+  }
+
+  .minor {
+    font-size: 0.8125rem;
+    color: var(--muted);
+  }
+
+  ol > li + li {
     border-top: 1px solid var(--line);
   }
 
@@ -358,14 +451,32 @@ const built = new Date().toLocaleString('en-US', {
     display: none;
   }
 
-  /* no room for the two columns: the numbers move into the line of links */
-  @media (max-width: 1000px) {
+  /* no room for the two columns beside the sidebar: the numbers move into the line of links */
+  @media (max-width: 1100px) {
     .node-stats {
       display: none;
     }
 
     .stats-inline {
       display: inline;
+    }
+  }
+
+  /* the sidebar drops under the projects, its blocks side by side */
+  @media (max-width: 1000px) {
+    .columns {
+      display: block;
+    }
+
+    .sidebar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0 10px;
+      width: auto;
+    }
+
+    .sidebar > * {
+      flex: 1 1 250px;
     }
   }
 
@@ -379,6 +490,10 @@ const built = new Date().toLocaleString('en-US', {
 
     .block-header {
       border-radius: 0;
+    }
+
+    .sidebar {
+      display: block;
     }
 
     .node {

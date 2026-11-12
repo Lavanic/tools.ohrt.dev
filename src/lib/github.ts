@@ -5,19 +5,20 @@ import { warn } from './warn';
 export interface Repo {
   stars: number;
   commits: number;
-  /** the newest commit on the default branch */
-  last?: { message: string; date: string; sha: string; url: string };
+  /** the newest commit on the default branch; author is the GitHub login behind it, or null for a bot or an unknown address */
+  last?: { message: string; date: string; sha: string; url: string; author: string | null };
 }
 
 interface Commit {
   sha: string;
   html_url: string;
+  author: { login: string; type: string } | null;
   commit: { message: string; committer: { date: string } };
 }
 
 // Local builds have no token and GitHub allows them 60 requests an hour, so answers are
 // kept for an hour. CI starts without this file and always asks.
-const CACHE = path.join(process.cwd(), 'node_modules/.cache/tools.ohrt.dev/github.json');
+const CACHE = path.join(process.cwd(), 'node_modules/.cache/tools.ohrt.dev/github-2.json');
 const FRESH = 60 * 60 * 1000;
 
 const headers: Record<string, string> = {
@@ -47,6 +48,7 @@ async function fetchRepo(slug: string): Promise<Repo> {
       date: head.commit.committer.date,
       sha: head.sha,
       url: head.html_url,
+      author: head.author?.type === 'User' ? head.author.login : null,
     },
   };
 }
