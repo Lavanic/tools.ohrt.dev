@@ -13,6 +13,9 @@ const [health, repos] = await Promise.all([
   fetchRepos(main.flatMap((p) => (p.data.repo ? [p.data.repo] : []))),
 ]);
 const count = new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 });
+// the forum's "unread" look goes to projects with a commit in the last 30 days
+const RECENT = 30 * 24 * 60 * 60 * 1000;
+const active = (last?: { date: string }) => !!last && Date.now() - Date.parse(last.date) < RECENT;
 const swirl = (tag: string) => ({ UP: 'green', DOWN: 'red' })[health[tag] as 'UP' | 'DOWN'] ?? 'yellow';
 const years = [...new Set(main.map((p) => p.data.started.getUTCFullYear()))];
 const when = (d: Date) => d.toLocaleString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
@@ -60,7 +63,7 @@ const built = new Date().toLocaleString('en-US', {
                   This repo was set as a public archive on {day(p.archived)}. It is now read-only.
                 </div>
               )}
-              <div class="node">
+              <div class:list={['node', { active: !p.archived && active(repo?.last) }]}>
                 <span class="node-icon" aria-hidden="true" set:html={icon(p.icon)} />
                 <div class="node-main">
                   <h3>{p.repo ? <a href={p.repo}>{p.title}</a> : p.title}</h3>
@@ -224,6 +227,14 @@ const built = new Date().toLocaleString('en-US', {
     display: block;
     width: 36px;
     height: 36px;
+  }
+
+  .active .node-icon {
+    color: #f8c37a;
+  }
+
+  .active h3 {
+    font-weight: 700;
   }
 
   .node-main {
