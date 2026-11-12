@@ -105,8 +105,10 @@ const built = new Date().toLocaleString('en-US', {
                   <div class="node-extra">
                     {p.images && (
                       <div class="media">
-                        {fit(p.images).map((img) => (
-                          <Image {...img} alt="" densities={[1, 2]} />
+                        {fit(p.images).map((img, i, all) => (
+                          <a href={img.src.src} aria-label={`${p.title} ${i + 1}/${all.length}`}>
+                            <Image {...img} alt="" densities={[1, 2]} />
+                          </a>
                         ))}
                       </div>
                     )}
@@ -309,11 +311,19 @@ const built = new Date().toLocaleString('en-US', {
     color: var(--muted);
   }
 
+  .media a {
+    cursor: zoom-in;
+  }
+
   .media :global(img) {
     display: block;
     box-sizing: content-box;
     border: 1px solid var(--line);
     background: #fff;
+  }
+
+  .media a:hover :global(img) {
+    border-color: var(--link);
   }
 
   .colophon {
