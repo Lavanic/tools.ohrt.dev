@@ -34,8 +34,10 @@ const built = new Date().toLocaleString('en-US', {
   </Fragment>
   <p class="intro">Some things I have built organized chronologically:</p>
   {years.map((year) => (
-    <section id={String(year)}>
-      <h2 class="year">{year}</h2>
+    <section class="block" id={String(year)}>
+      <h2 class="block-header">
+        <a href={`#${year}`}>{year} Projects</a>
+      </h2>
       <ol>
         {main
           .filter((p) => p.data.started.getUTCFullYear() === year)
@@ -115,19 +117,29 @@ const built = new Date().toLocaleString('en-US', {
 <style>
   .intro {
     margin: 0 0 10px;
-    font-size: 15px;
-    color: #6b7486;
+    color: var(--dim);
   }
 
-  .year {
-    margin: 16px 0 4px;
-    font-size: 15px;
-    letter-spacing: 2px;
-    color: #6b7486;
+  .block {
+    margin-bottom: 20px;
+    border: 1px solid;
+    border-color: #e0e0e0 #d6d6d6 #ccc;
+    border-radius: 4px;
+    background: #fff;
+    scroll-margin-top: 10px;
   }
 
-  section:first-of-type .year {
-    margin-top: 0;
+  .block-header {
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--line);
+    border-radius: 3px 3px 0 0;
+    background: linear-gradient(0deg, #e8f4fc, #fff);
+    color: var(--link);
+    font-size: 1.25rem;
+  }
+
+  .block-header a {
+    color: inherit;
   }
 
   ol {
@@ -137,12 +149,11 @@ const built = new Date().toLocaleString('en-US', {
   }
 
   li {
-    padding: 12px 0 10px;
-    border-top: 1px solid #e6e1d6;
+    padding: 10px;
   }
 
-  section:last-of-type li:last-child {
-    border-bottom: 1px solid #e6e1d6;
+  li + li {
+    border-top: 1px solid var(--line);
   }
 
   .archived {
@@ -165,33 +176,19 @@ const built = new Date().toLocaleString('en-US', {
   }
 
   h3 {
-    font-size: 21px;
-    letter-spacing: 0.3px;
-    color: #172238;
+    font-size: 1.0625rem;
     white-space: nowrap;
   }
 
-  h3 a {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  h3 a:hover {
-    text-decoration: underline;
-  }
-
   .sub {
-    font-family: georgia, serif;
-    font-size: 15px;
-    font-style: italic;
-    letter-spacing: 0;
-    color: #6b7486;
+    font-size: 0.8125rem;
+    color: var(--muted);
     white-space: nowrap;
   }
 
   .links {
     margin-left: auto;
-    font-size: 14px;
+    font-size: 0.8125rem;
     white-space: nowrap;
   }
 
@@ -208,9 +205,10 @@ const built = new Date().toLocaleString('en-US', {
   }
 
   li p {
-    max-width: 60ch;
-    margin: 6px 0 0;
-    font-size: 16px;
+    max-width: 75ch;
+    margin: 2px 0 0;
+    font-size: 0.8125rem;
+    color: var(--dim);
   }
 
   .body {
@@ -228,14 +226,14 @@ const built = new Date().toLocaleString('en-US', {
 
   .media :global(img) {
     display: block;
-    border: 1px solid #e2ddd1;
+    border: 1px solid var(--line);
     background: #fff;
   }
 
   .colophon {
-    margin: 24px 0 0;
-    font-size: 13px;
-    color: #6b7486;
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--dim);
   }
 
   .load-time {
@@ -247,25 +245,27 @@ const built = new Date().toLocaleString('en-US', {
     display: none;
   }
 
-  @media (max-width: 47rem) {
+  @media (max-width: 650px) {
+    /* blocks run edge to edge on a phone */
+    .block {
+      margin-inline: -10px;
+      border-inline: 0;
+      border-radius: 0;
+    }
+
+    .block-header {
+      border-radius: 0;
+    }
+
     .archived {
       padding: 1px 6px;
       /* scales with the screen so the sentence stays on one line */
-      font-size: min(12px, calc((100vw - 68px) / 36));
-    }
-
-    h3 {
-      font-size: 18px;
+      font-size: min(12px, calc((100vw - 32px) / 36));
     }
 
     .sub {
       order: 1;
       flex-basis: 100%;
-      font-size: 13px;
-    }
-
-    li p {
-      font-size: 14px;
     }
 
     .stack {
