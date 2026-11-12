@@ -13,7 +13,7 @@ const years = [...new Set(main.map((p) => p.data.started.getUTCFullYear()))];
 const when = (d: Date) => d.toLocaleString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
 const day = (d: Date) =>
   d.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
-const fit = (images: ImageMetadata[], maxHeight = 88, maxWidth = 240, gap = 3) => {
+const fit = (images: ImageMetadata[], maxHeight = 36, maxWidth = 150, gap = 3) => {
   const ratios = images.map((i) => i.width / i.height);
   const height = Math.min(maxHeight, (maxWidth - gap * (images.length - 1)) / ratios.reduce((a, b) => a + b));
   return images.map((src, i) => ({ src, width: Math.round(height * ratios[i]), height: Math.round(height) }));
@@ -48,44 +48,46 @@ const built = new Date().toLocaleString('en-US', {
                   This repo was set as a public archive on {day(p.archived)}. It is now read-only.
                 </div>
               )}
-              <div class="row">
-                <h3>{p.repo ? <a href={p.repo}>{p.title}</a> : p.title}</h3>
-                <span class="sub">
-                  {p.language}, {when(p.started)}
-                </span>
-                <span class="links">
-                  {p.repo && (
-                    <a href={p.repo} target="_blank" rel="noopener">
-                      source
-                    </a>
-                  )}
-                  {p.monitor && (
-                    <a href={STATUS_PAGE} target="_blank" rel="noopener">
-                      status
-                      <img
-                        class="swirl"
-                        src={`/images/swirl-${swirl(p.monitor)}.gif`}
-                        width="20"
-                        height="20"
-                        alt={(health[p.monitor] ?? 'unknown').toLowerCase()}
-                        title={(health[p.monitor] ?? 'unknown').toLowerCase()}
-                      />
-                    </a>
-                  )}
-                  {p.writeup && (
-                    <a href={p.writeup} target="_blank" rel="noopener">
-                      writeup
-                    </a>
-                  )}
-                </span>
-              </div>
-              <div class:list={['body', { stack: (p.images?.length ?? 0) > 1 }]}>
-                <p>{p.description}</p>
+              <div class="node">
+                <div class="node-main">
+                  <h3>{p.repo ? <a href={p.repo}>{p.title}</a> : p.title}</h3>
+                  <span class="sub">
+                    {p.language}, {when(p.started)}
+                  </span>
+                  <p>{p.description}</p>
+                  <div class="links">
+                    {p.repo && (
+                      <a href={p.repo} target="_blank" rel="noopener">
+                        source
+                      </a>
+                    )}
+                    {p.monitor && (
+                      <a href={STATUS_PAGE} target="_blank" rel="noopener">
+                        status
+                        <img
+                          class="swirl"
+                          src={`/images/swirl-${swirl(p.monitor)}.gif`}
+                          width="20"
+                          height="20"
+                          alt={(health[p.monitor] ?? 'unknown').toLowerCase()}
+                          title={(health[p.monitor] ?? 'unknown').toLowerCase()}
+                        />
+                      </a>
+                    )}
+                    {p.writeup && (
+                      <a href={p.writeup} target="_blank" rel="noopener">
+                        writeup
+                      </a>
+                    )}
+                  </div>
+                </div>
                 {p.images && (
-                  <div class="media">
-                    {fit(p.images).map((img) => (
-                      <Image {...img} alt="" densities={[1, 2]} />
-                    ))}
+                  <div class="node-extra">
+                    <div class="media">
+                      {fit(p.images).map((img) => (
+                        <Image {...img} alt="" densities={[1, 2]} />
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
@@ -148,18 +150,13 @@ const built = new Date().toLocaleString('en-US', {
     list-style: none;
   }
 
-  li {
-    padding: 10px;
-  }
-
   li + li {
     border-top: 1px solid var(--line);
   }
 
   .archived {
-    margin: 0 0 6px;
     padding: 1px 16px;
-    border-block: 1px solid rgb(212 167 44 / 0.4);
+    border-bottom: 1px solid rgb(212 167 44 / 0.4);
     background: #fff8c5;
     color: rgb(31 35 40 / 0.7);
     font-size: 12px;
@@ -168,28 +165,38 @@ const built = new Date().toLocaleString('en-US', {
     text-align: center;
   }
 
-  .row {
+  .node {
     display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 2px 10px;
+    align-items: center;
+  }
+
+  .node-main {
+    flex: 1;
+    min-width: 0;
+    padding: 10px;
   }
 
   h3 {
+    display: inline;
     font-size: 1.0625rem;
-    white-space: nowrap;
   }
 
   .sub {
+    margin-left: 6px;
     font-size: 0.8125rem;
     color: var(--muted);
     white-space: nowrap;
   }
 
-  .links {
-    margin-left: auto;
+  .node-main p {
+    margin: 0;
     font-size: 0.8125rem;
-    white-space: nowrap;
+    color: var(--dim);
+  }
+
+  .links {
+    margin-top: 0.3em;
+    font-size: 0.8125rem;
   }
 
   .links > * + * {
@@ -199,33 +206,28 @@ const built = new Date().toLocaleString('en-US', {
   .swirl {
     width: 20px;
     height: 20px;
-    margin-left: 3px;
+    /* pulled in top and bottom so the swirl doesn't make its line taller than the others */
+    margin: -2px 0 -2px 3px;
     vertical-align: -5px;
     image-rendering: pixelated;
   }
 
-  li p {
-    max-width: 75ch;
-    margin: 2px 0 0;
+  .node-extra {
+    flex: none;
+    width: 280px;
+    padding: 10px;
     font-size: 0.8125rem;
-    color: var(--dim);
-  }
-
-  .body {
-    display: flex;
-    gap: 20px;
-    align-items: flex-start;
   }
 
   .media {
     display: flex;
-    flex: none;
+    justify-content: flex-end;
     gap: 3px;
-    margin: 8px 0 0 auto;
   }
 
   .media :global(img) {
     display: block;
+    box-sizing: content-box;
     border: 1px solid var(--line);
     background: #fff;
   }
@@ -260,21 +262,20 @@ const built = new Date().toLocaleString('en-US', {
     .archived {
       padding: 1px 6px;
       /* scales with the screen so the sentence stays on one line */
-      font-size: min(12px, calc((100vw - 32px) / 36));
+      font-size: min(12px, calc((100vw - 12px) / 36));
     }
 
-    .sub {
-      order: 1;
+    .node {
+      flex-wrap: wrap;
+    }
+
+    .node-extra {
       flex-basis: 100%;
+      padding-top: 0;
     }
 
-    .stack {
-      flex-direction: column;
-      gap: 0;
-    }
-
-    .stack .media {
-      margin: 10px 0 0;
+    .media {
+      justify-content: flex-start;
     }
   }
 </style>
