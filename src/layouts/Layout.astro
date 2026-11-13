@@ -351,6 +351,11 @@ const built = new Date().toLocaleString('en-US', {
   }
 
   @media (max-width: 650px) {
+    /* every size on the page is in rem, so a phone shrinks them all together */
+    html {
+      font-size: 87.5%;
+    }
+
     /* a size down on a phone */
     body {
       font-size: 0.875rem;
