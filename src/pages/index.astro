@@ -37,6 +37,8 @@ const exact = new Intl.NumberFormat('en-US');
 const known = projects.flatMap(({ repo }) => (repo ? [repo] : []));
 const sum = (pick: (repo: (typeof known)[number]) => number) =>
   exact.format(known.reduce((n, repo) => n + pick(repo), 0));
+// where a title leads: the code, or the write-up of a project whose code is not public
+const home = (p: { repo?: string; writeup?: string }) => p.repo ?? p.writeup;
 const years = [...new Set(main.map((p) => p.data.started.getUTCFullYear()))];
 const when = (d: Date) => d.toLocaleString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
 const day = (d: Date) =>
@@ -73,7 +75,7 @@ const fit = (shots: Shot[], maxHeight = 36, maxWidth = 150, gap = 3) => {
                     <span class="node-icon" aria-hidden="true" set:html={icon(p.icon)} />
                     <div class="node-main">
                       <div class="node-title">
-                        <h3>{p.repo ? <a href={p.repo}>{p.title}</a> : p.title}</h3>
+                        <h3>{home(p) ? <a href={home(p)}>{p.title}</a> : p.title}</h3>
                         <span class="sub">
                           {p.language}, {when(p.started)}
                         </span>
@@ -97,7 +99,7 @@ const fit = (shots: Shot[], maxHeight = 36, maxWidth = 150, gap = 3) => {
                         )}
                         {p.writeup && (
                           <a href={p.writeup} target="_blank" rel="noopener">
-                            writeup
+                            {new URL(p.writeup).hostname === 'devpost.com' ? 'devpost' : 'writeup'}
                           </a>
                         )}
                         {repo && (
@@ -126,7 +128,7 @@ const fit = (shots: Shot[], maxHeight = 36, maxWidth = 150, gap = 3) => {
                             class="media"
                             data-title={p.title}
                             data-sub={`${p.language}, ${when(p.started)}`}
-                            data-href={p.repo}
+                            data-href={home(p)}
                           >
                             {fit(p.images).map(({ src, poster, preview, caption, width, height }, i, all) => (
                               <a
@@ -213,7 +215,9 @@ const fit = (shots: Shot[], maxHeight = 36, maxWidth = 150, gap = 3) => {
           )}
           <dl>
             <dt>Latest project</dt>
-            <dd>{projects[0].p.repo ? <a href={projects[0].p.repo}>{projects[0].p.title}</a> : projects[0].p.title}</dd>
+            <dd>
+              {home(projects[0].p) ? <a href={home(projects[0].p)}>{projects[0].p.title}</a> : projects[0].p.title}
+            </dd>
           </dl>
         </div>
       </section>
