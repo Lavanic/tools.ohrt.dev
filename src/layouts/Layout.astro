@@ -217,9 +217,10 @@ const built = new Date().toLocaleString('en-US', {
     padding: 0 10px;
   }
 
+  /* the halftone is drawn for a 1920px screen: narrower ones see its middle, wider ones see it start over */
   .banner {
     height: 46px;
-    background: #3a587a;
+    background: #3a587a url('/images/banner.webp') center top repeat-x;
     border-bottom: 1px solid #1d2a42;
   }
 
@@ -354,6 +355,11 @@ const built = new Date().toLocaleString('en-US', {
   }
 
   @media (max-width: 650px) {
+    /* a phone gets the halftone's left end, where the dots thin out behind the logo */
+    .banner {
+      background-position-x: left;
+    }
+
     /* every size on the page is in rem, so a phone shrinks them all together */
     html {
       font-size: 87.5%;
