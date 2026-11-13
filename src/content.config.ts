@@ -17,6 +17,14 @@ const projects = defineCollection({
       writeup: z.string().url().optional(),
       /** something the project won, shown as a badge beside its title */
       award: z.string().optional(),
+      /** for a project in a private repo, which the build cannot ask GitHub about: its numbers and newest commit, written in by hand */
+      snapshot: z
+        .object({
+          stars: z.number().default(0),
+          commits: z.number(),
+          last: z.object({ message: z.string(), date: z.coerce.date(), sha: z.string() }),
+        })
+        .optional(),
       monitor: z.string().optional(),
       wip: z.boolean().default(false),
       archived: z.coerce.date().optional(),

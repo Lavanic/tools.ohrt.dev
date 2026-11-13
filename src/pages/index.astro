@@ -23,9 +23,12 @@ const together = (found: Repo[]): Repo | undefined =>
           .flatMap((repo) => (repo.last ? [repo.last] : []))
           .sort((a, b) => Date.parse(b.date) - Date.parse(a.date))[0],
       };
+// what a private repo would have answered, taken from the project's own file
+const written = ({ snapshot }: (typeof main)[number]['data']): Repo | undefined =>
+  snapshot && { ...snapshot, last: { ...snapshot.last, date: snapshot.last.date.toISOString(), author: null } };
 const projects = main.map(({ data: p }) => ({
   p,
-  repo: together(sources(p).flatMap((url) => (repos[url] ? [repos[url]] : []))),
+  repo: together(sources(p).flatMap((url) => (repos[url] ? [repos[url]] : []))) ?? written(p),
 }));
 // each project's newest commit, newest first; ones with no person behind them (the door counter's sync bot) stay out
 const recent = projects
@@ -147,15 +150,21 @@ const fit = (shots: Shot[], maxHeight = 36, maxWidth = 150, gap = 3) => {
                         )}
                         {repo?.last && (
                           <>
-                            <a
-                              class="commit"
-                              href={repo.last.url}
-                              title={repo.last.message}
-                              target="_blank"
-                              rel="noopener"
-                            >
-                              {repo.last.message}
-                            </a>
+                            {repo.last.url ? (
+                              <a
+                                class="commit"
+                                href={repo.last.url}
+                                title={repo.last.message}
+                                target="_blank"
+                                rel="noopener"
+                              >
+                                {repo.last.message}
+                              </a>
+                            ) : (
+                              <span class="commit" title={repo.last.message}>
+                                {repo.last.message}
+                              </span>
+                            )}
                             <div class="commit-meta">
                               <time datetime={repo.last.date}>{day(new Date(repo.last.date))}</time>
                               <span class="sha">{repo.last.sha.slice(0, 7)}</span>

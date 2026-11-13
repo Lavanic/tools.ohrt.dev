@@ -5,8 +5,11 @@ import { warn } from './warn';
 export interface Repo {
   stars: number;
   commits: number;
-  /** the newest commit on the default branch; author is the GitHub login behind it, or null for a bot or an unknown address */
-  last?: { message: string; date: string; sha: string; url: string; author: string | null };
+  /**
+   * the newest commit on the default branch; author is the GitHub login behind it, or null for a bot or an unknown address.
+   * A commit in a private repo has no url, since nobody else could open it.
+   */
+  last?: { message: string; date: string; sha: string; url?: string; author: string | null };
 }
 
 interface Commit {
