@@ -135,14 +135,17 @@ const built = new Date().toLocaleString('en-US', {
     text-size-adjust: 100%;
   }
 
-  @supports (animation-timeline: scroll()) {
-    html {
-      animation: overscroll linear both;
-    }
+  /* only where a finger can pull the page past its ends; a desktop Firefox would paint its scrollbar's lane in this colour */
+  @media (hover: none) and (pointer: coarse) {
+    @supports (animation-timeline: scroll()) {
+      html {
+        animation: overscroll linear both;
+      }
 
-    /* separate rule so the minifier can't fold the timeline into the shorthand, which browsers reject */
-    :root {
-      animation-timeline: scroll(root);
+      /* separate rule so the minifier can't fold the timeline into the shorthand, which browsers reject */
+      :root {
+        animation-timeline: scroll(root);
+      }
     }
   }
 
