@@ -79,6 +79,7 @@ const fit = (shots: Shot[], maxHeight = 36, maxWidth = 150, gap = 3) => {
                         <span class="sub">
                           {p.language}, {when(p.started)}
                         </span>
+                        {p.award && <span class="badge">{p.award}</span>}
                         {p.archived && (
                           <span class="label">
                             This repo was set as a public archive on {day(p.archived)}. It is now read-only.
@@ -386,6 +387,20 @@ const fit = (shots: Shot[], maxHeight = 36, maxWidth = 150, gap = 3) => {
     white-space: nowrap;
   }
 
+  /* in the manner of a forum's thread prefix */
+  .badge {
+    --pad: 1px;
+    margin-right: 6px;
+    padding: calc(var(--pad) + 1px) 0.35em var(--pad);
+    border: 1px solid #c6e4f9;
+    border-radius: 2px;
+    background: #e8f4fc;
+    color: var(--link-hover);
+    font-size: 0.75rem;
+    line-height: 1.26;
+    white-space: nowrap;
+  }
+
   /* the archive notice, in the pale yellow of GitHub's, reaching the far edge of the row */
   .label {
     --pad: 1px;
@@ -408,6 +423,11 @@ const fit = (shots: Shot[], maxHeight = 36, maxWidth = 150, gap = 3) => {
   @supports (text-box: trim-both cap alphabetic) {
     .label {
       --pad: 4px;
+      text-box: trim-both cap alphabetic;
+    }
+
+    .badge {
+      padding-block: 4px;
       text-box: trim-both cap alphabetic;
     }
   }

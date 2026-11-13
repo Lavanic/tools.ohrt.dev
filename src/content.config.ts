@@ -15,6 +15,8 @@ const projects = defineCollection({
       /** more repos that belong to the same project; their numbers are added to the first one's */
       also: z.array(z.string().url()).optional(),
       writeup: z.string().url().optional(),
+      /** something the project won, shown as a badge beside its title */
+      award: z.string().optional(),
       monitor: z.string().optional(),
       wip: z.boolean().default(false),
       archived: z.coerce.date().optional(),
