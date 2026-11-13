@@ -40,6 +40,8 @@ const exact = new Intl.NumberFormat('en-US');
 const known = projects.flatMap(({ repo }) => (repo ? [repo] : []));
 const sum = (pick: (repo: (typeof known)[number]) => number) =>
   exact.format(known.reduce((n, repo) => n + pick(repo), 0));
+// a write-up is named for the place it lives, where that says more
+const places: Record<string, string> = { 'devpost.com': 'devpost', 'grabcad.com': 'model' };
 // where a title leads: the code, or the write-up of a project whose code is not public
 const home = (p: { repo?: string; writeup?: string }) => p.repo ?? p.writeup;
 const years = [...new Set(main.map((p) => p.data.started.getUTCFullYear()))];
@@ -103,7 +105,7 @@ const fit = (shots: Shot[], maxHeight = 36, maxWidth = 150, gap = 3) => {
                         )}
                         {p.writeup && (
                           <a href={p.writeup} target="_blank" rel="noopener">
-                            {new URL(p.writeup).hostname === 'devpost.com' ? 'devpost' : 'writeup'}
+                            {places[new URL(p.writeup).hostname] ?? 'writeup'}
                           </a>
                         )}
                         {repo && (
