@@ -208,11 +208,13 @@ import { icon } from '../lib/icons';
     padding-right: var(--gutter, 0);
   }
 
+  /* the buttons keep to the right when a lone picture has no count to push them there */
   .tools {
     position: absolute;
     inset: 0 0 auto;
     z-index: 1;
     display: flex;
+    justify-content: flex-end;
   }
 
   .count {
