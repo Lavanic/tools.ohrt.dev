@@ -1,7 +1,7 @@
 ---
 title: crier
 icon: bell-ring
-description: A single-binary Go bot that watches 135 job boards and pages my phone within a minute of a new-grad role going live.
+description: Single-binary Go daemon that polls 135 job boards, phone alerts in <60s.
 started: 2026-07-06
 language: Go
 status: live
