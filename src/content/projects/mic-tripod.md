@@ -11,4 +11,8 @@ images:
     caption: Assembly drawing with top, front, side and section views
   - src: ./images/mic-tripod-2.webp
     caption: Fusion previews of the assembly and its nine parts
+  - src: ./images/mic-tripod-3.webp
+    poster: ./images/mic-tripod-3.jpg
+    preview: ./images/mic-tripod-3-small.webp
+    caption: Assembly animation, the parts coming together one by one
 ---
