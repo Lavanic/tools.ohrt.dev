@@ -36,6 +36,8 @@ const built = new Date().toLocaleString('en-US', {
     <meta property="og:url" content={canonical} />
     <meta name="twitter:card" content="summary" />
     <link rel="sitemap" href="/sitemap.xml" />
+    <!-- the halftone is a CSS background, which the browser only finds once the styles are read; on a phone it is the largest thing painted -->
+    <link rel="preload" as="image" href="/images/banner.webp" fetchpriority="high" />
   </head>
   <body>
     <header>
