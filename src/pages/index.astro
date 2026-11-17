@@ -168,6 +168,13 @@ const fit = (shots: Shot[], maxHeight = 36, maxWidth = 150, gap = 3) => {
                               </span>
                             )}
                             <div class="commit-meta">
+                              <span
+                                class="last"
+                                role="img"
+                                aria-label="Last commit"
+                                title="Last commit"
+                                set:html={icon('git-commit-horizontal')}
+                              />
                               <time datetime={repo.last.date}>{day(new Date(repo.last.date))}</time>
                               <span class="sha">{repo.last.sha.slice(0, 7)}</span>
                             </div>
@@ -545,6 +552,17 @@ const fit = (shots: Shot[], maxHeight = 36, maxWidth = 150, gap = 3) => {
     overflow: hidden;
     color: var(--muted);
     white-space: nowrap;
+  }
+
+  .last {
+    display: flex;
+    align-items: center;
+    margin-right: 0.3em;
+  }
+
+  .last :global(svg) {
+    width: 1.1em;
+    height: 1.1em;
   }
 
   .sha::before {
