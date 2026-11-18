@@ -9,6 +9,15 @@ const { title, description = "Oliver Ohrt's tools and projects.", noindex = fals
 const canonical = new URL(Astro.url.pathname, Astro.site);
 // the home page has no other heading, so its logo is one
 const Logo = Astro.url.pathname === '/' ? 'h1' : 'div';
+// the same person ohrt.dev describes, so search engines tie the projects to him
+const about = Astro.url.pathname === '/' && {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': new URL('/#website', Astro.site).href,
+  name: 'tools.ohrt.dev',
+  url: canonical.href,
+  author: { '@type': 'Person', '@id': 'https://ohrt.dev/#me', name: 'Oliver Ohrt', url: 'https://ohrt.dev/' },
+};
 const built = new Date().toLocaleString('en-US', {
   day: 'numeric',
   month: 'short',
@@ -36,6 +45,7 @@ const built = new Date().toLocaleString('en-US', {
     <meta property="og:url" content={canonical} />
     <meta name="twitter:card" content="summary" />
     <link rel="sitemap" href="/sitemap.xml" />
+    {about && <script is:inline type="application/ld+json" set:html={JSON.stringify(about)} />}
     <!-- the halftone is a CSS background, which the browser only finds once the styles are read; on a phone it is the largest thing painted -->
     <link rel="preload" as="image" href="/images/banner.webp" fetchpriority="high" />
   </head>
